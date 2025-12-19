@@ -5,6 +5,9 @@ import { Theme } from './app/providers/Theme.tsx';
 import { Router } from './app/providers/Router.tsx';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './shared/config';
+import { createHead, UnheadProvider } from '@unhead/react/client';
+
+const head = createHead();
 
 createRoot(document.getElementById('root')!, {
   onCaughtError: (error: unknown, errorInfo: ErrorInfo) => {
@@ -23,10 +26,12 @@ createRoot(document.getElementById('root')!, {
   },
 }).render(
   <StrictMode>
-    <Theme>
-      <QueryClientProvider client={queryClient}>
-        <Router />
-      </QueryClientProvider>
-    </Theme>
+    <UnheadProvider head={head}>
+      <Theme>
+        <QueryClientProvider client={queryClient}>
+          <Router />
+        </QueryClientProvider>
+      </Theme>
+    </UnheadProvider>
   </StrictMode>,
 );

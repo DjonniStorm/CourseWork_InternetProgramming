@@ -29,4 +29,11 @@ interface UserUpdate {
   password: string;
 }
 
-export type { UserCreate, UserLogin, UserResponse, UserRole, UserUpdate };
+interface AuthResponse {
+  accessToken: string;
+  userId: string;
+  email: string;
+  username: string;
+}
+
+export type { AuthResponse, UserCreate, UserLogin, UserResponse, UserRole, UserUpdate };

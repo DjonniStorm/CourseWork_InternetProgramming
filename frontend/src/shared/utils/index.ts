@@ -1,0 +1,1 @@
+export { nameToColor } from './colors';
