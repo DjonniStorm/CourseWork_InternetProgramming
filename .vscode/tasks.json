@@ -1,0 +1,206 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Maven: Запуск (dev)",
+            "type": "shell",
+            "command": "mvn spring-boot:run -Pdev",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "env": {
+                    "SPRING_PROFILES_ACTIVE": "dev"
+                }
+            },
+            "problemMatcher": "$tsc",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Maven: Запуск (prod)",
+            "type": "shell",
+            "command": "mvn spring-boot:run -Pprod",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "env": {
+                    "SPRING_PROFILES_ACTIVE": "prod"
+                }
+            },
+            "problemMatcher": "$tsc",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Maven: Запуск (nopass)",
+            "type": "shell",
+            "command": "mvn spring-boot:run -Pnopass",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "env": {
+                    "SPRING_PROFILES_ACTIVE": "nopass"
+                }
+            },
+            "problemMatcher": "$tsc",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Maven: Сборка (front)",
+            "type": "shell",
+            "command": "mvn clean package -Pfront",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar"
+            },
+            "problemMatcher": "$tsc",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker: Запуск PostgreSQL",
+            "type": "shell",
+            "command": "docker-compose up -d",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker: Остановка PostgreSQL",
+            "type": "shell",
+            "command": "docker-compose down",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker: Остановка PostgreSQL (с удалением данных)",
+            "type": "shell",
+            "command": "docker-compose down -v",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Docker: Просмотр логов PostgreSQL",
+            "type": "shell",
+            "command": "docker-compose logs -f postgres",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Liquibase: Применить миграции (prod)",
+            "type": "shell",
+            "command": "mvn liquibase:update -Pprod",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Liquibase: Статус миграций (prod)",
+            "type": "shell",
+            "command": "mvn liquibase:status -Pprod",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Liquibase: Откатить последнюю миграцию (prod)",
+            "type": "shell",
+            "command": "mvn liquibase:rollback -Pprod -Dliquibase.rollbackCount=1",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        }
+    ]
+}
+

@@ -1,0 +1,10 @@
+spring:
+  security:
+    user:
+      name: user
+      password: 
+      roles: USER
+
+# Настройки для отключения безопасности (можно использовать SecurityConfig)
+# Это будет работать только если создать SecurityConfig с permitAll()
+
