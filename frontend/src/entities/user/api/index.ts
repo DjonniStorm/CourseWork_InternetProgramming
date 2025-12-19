@@ -18,6 +18,16 @@ const userApi = {
     const response = await apiClient.delete<void>(`/user/${id}`);
     return response;
   },
+  searchUsers: async (query: string, page: number = 0, size: number = 20) => {
+    const response = await apiClient.get<{
+      content: UserResponse[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+      size: number;
+    }>(`/users/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`);
+    return response;
+  },
 };
 
 const authApi = {

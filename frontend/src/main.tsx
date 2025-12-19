@@ -27,11 +27,11 @@ createRoot(document.getElementById('root')!, {
 }).render(
   <StrictMode>
     <UnheadProvider head={head}>
-      <Theme>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <Theme>
           <Router />
-        </QueryClientProvider>
-      </Theme>
+        </Theme>
+      </QueryClientProvider>
     </UnheadProvider>
   </StrictMode>,
 );

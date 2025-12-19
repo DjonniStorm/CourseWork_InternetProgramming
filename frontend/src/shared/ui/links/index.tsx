@@ -15,8 +15,8 @@ const Links = ({ dir, gap }: LinksProps) => {
       <Link to="/invitations">
         <UnstyledButton>Приглашения</UnstyledButton>
       </Link>
-      <Link to="/profile">
-        <UnstyledButton>Профиль</UnstyledButton>
+      <Link to="/contacts">
+        <UnstyledButton>Контакты</UnstyledButton>
       </Link>
     </Group>
   );

@@ -25,6 +25,10 @@ const EventPage = lazy(() =>
   import('@pages/events').then((module) => ({ default: module.EventPage })),
 );
 
+const ContactsPage = lazy(() =>
+  import('@pages/contacts').then((module) => ({ default: module.ContactsPage })),
+);
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -53,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: '/events/:id',
         element: <EventPage />,
+      },
+      {
+        path: '/contacts',
+        element: <ContactsPage />,
       },
     ],
   },

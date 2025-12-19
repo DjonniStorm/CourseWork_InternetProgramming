@@ -57,4 +57,9 @@ public class UserService {
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
+
+    public org.springframework.data.domain.Page<User> searchUsers(String query, UUID excludeUserId,
+            org.springframework.data.domain.Pageable pageable) {
+        return userRepository.searchUsers(query, excludeUserId, pageable);
+    }
 }

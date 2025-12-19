@@ -34,6 +34,7 @@ const useUpdateContact = () => {
       contactApi.updateContact(id, contact),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['userContacts'] });
     },
   });
 };
