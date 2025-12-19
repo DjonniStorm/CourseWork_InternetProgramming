@@ -2,24 +2,34 @@ package com.coursework.calendar.api.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.coursework.calendar.api.user.dto.AuthResponse;
 import com.coursework.calendar.api.user.dto.UserCreateRequest;
 import com.coursework.calendar.api.user.dto.UserLoginRequest;
 import com.coursework.calendar.api.user.dto.UserResponse;
 import com.coursework.calendar.entities.user.User;
 import com.coursework.calendar.mapper.UserMapper;
+import com.coursework.calendar.service.JwtService;
 import com.coursework.calendar.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,23 +37,41 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
     @Operation(summary = "Авторизация пользователя", description = "Авторизует пользователя по email и паролю")
-    @ApiResponse(responseCode = "200", description = "Успешная авторизация", content = @Content(schema = @Schema(implementation = UserResponse.class)))
-    @ApiResponse(responseCode = "401", description = "Неверный email или пароль")
-    public ResponseEntity<UserResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешная авторизация", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Неверный email или пароль")
+    })
+    public ResponseEntity<AuthResponse> login(@RequestBody UserLoginRequest userLoginRequest,
+            HttpServletResponse response) {
         try {
             User user = userService.getUserByEmail(userLoginRequest.email());
             if (!passwordEncoder.matches(userLoginRequest.password(), user.getPasswordHash())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            return ResponseEntity.ok(UserMapper.toResponse(user));
+
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+            Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setSecure(false); // В продакшене должно быть true для HTTPS
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7 дней
+            response.addCookie(refreshTokenCookie);
+
+            AuthResponse authResponse = new AuthResponse(accessToken, user.getId(), user.getEmail(),
+                    user.getUsername());
+            return ResponseEntity.ok(authResponse);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -51,16 +79,70 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация пользователя", description = "Регистрирует нового пользователя")
-    @ApiResponse(responseCode = "200", description = "Успешная регистрация", content = @Content(schema = @Schema(implementation = UserResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
-    @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
-    public ResponseEntity<UserResponse> register(@RequestBody UserCreateRequest userCreateRequest) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешная регистрация"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные запроса"),
+            @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
+    })
+    public ResponseEntity<Void> register(@RequestBody UserCreateRequest userCreateRequest) {
         try {
             userService.getUserByEmail(userCreateRequest.email());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (RuntimeException e) {
-            User user = userService.createUser(UserMapper.toEntity(userCreateRequest));
-            return ResponseEntity.ok(UserMapper.toResponse(user));
+            try {
+                userService.createUser(UserMapper.toEntity(userCreateRequest));
+                return ResponseEntity.ok().build();
+            } catch (Exception ex) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "Обновление токена", description = "Обновляет access token используя refresh token из cookie")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Токен успешно обновлен", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Невалидный refresh token")
+    })
+    public ResponseEntity<AuthResponse> refresh(
+            @Parameter(description = "Refresh token из cookie") @CookieValue(value = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+        if (refreshToken == null || !jwtService.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = jwtService.extractUsername(refreshToken);
+        User user = userService.getUserByEmail(email);
+
+        String newAccessToken = jwtService.generateAccessToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", newRefreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+        refreshTokenCookie.setPath("/api/auth");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(refreshTokenCookie);
+
+        AuthResponse authResponse = new AuthResponse(newAccessToken, user.getId(), user.getEmail(),
+                user.getUsername());
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Получить текущего пользователя", description = "Возвращает информацию о текущем аутентифицированном пользователе")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Информация о пользователе", content = @Content(schema = @Schema(implementation = UserResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Не авторизован")
+    })
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(UserMapper.toResponse(user));
     }
 }

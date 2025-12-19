@@ -14,3 +14,8 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
 
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-token-generation-minimum-32-characters}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
