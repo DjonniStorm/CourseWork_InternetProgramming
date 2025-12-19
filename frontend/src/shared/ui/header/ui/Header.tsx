@@ -1,6 +1,7 @@
 import { AppShell, Burger, Group, Image, UnstyledButton } from '@mantine/core';
 import { Link } from 'react-router';
 import { Avatar } from '../../avatar';
+import { Links } from '../../links';
 
 const Logo = () => {
   return (
@@ -38,17 +39,6 @@ type AppHeaderProps = {
   name: string;
 };
 
-const HeaderLinks = () => {
-  return (
-    <Group ml="xl" gap={0} visibleFrom="sm">
-      <UnstyledButton>Home</UnstyledButton>
-      <UnstyledButton>Blog</UnstyledButton>
-      <UnstyledButton>Contacts</UnstyledButton>
-      <UnstyledButton>Support</UnstyledButton>
-    </Group>
-  );
-};
-
 const AppHeader = ({ opened, toggle, name }: AppHeaderProps) => {
   return (
     <AppShell.Header>
@@ -56,7 +46,7 @@ const AppHeader = ({ opened, toggle, name }: AppHeaderProps) => {
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
         <Group justify="space-between" style={{ flex: 1 }}>
           <Logo />
-          <HeaderLinks />
+          <Links dir="row" gap={10} />
           <Group>
             <Avatar name={name} />
           </Group>

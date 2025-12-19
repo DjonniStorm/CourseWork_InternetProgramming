@@ -14,6 +14,17 @@ const RegisterPage = lazy(() =>
   import('@pages/auth/register').then((module) => ({ default: module.RegisterPage })),
 );
 
+const InvintationsPage = lazy(() =>
+  import('@pages/invintations').then((module) => ({ default: module.InvintationsPage })),
+);
+
+const EventsPage = lazy(() =>
+  import('@pages/events').then((module) => ({ default: module.EventsPage })),
+);
+const EventPage = lazy(() =>
+  import('@pages/events').then((module) => ({ default: module.EventPage })),
+);
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -30,6 +41,18 @@ const router = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+      },
+      {
+        path: '/invitations',
+        element: <InvintationsPage />,
+      },
+      {
+        path: '/events',
+        element: <EventsPage />,
+      },
+      {
+        path: '/events/:id',
+        element: <EventPage />,
       },
     ],
   },
