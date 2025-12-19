@@ -30,7 +30,7 @@ const useCreateUser = () => {
 
 const useUpdateUser = () => {
   const mutation = useMutation({
-    mutationFn: (user: UserUpdate) => userApi.updateUser(user),
+    mutationFn: ({ id, user }: { id: string; user: UserUpdate }) => userApi.updateUser(id, user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },

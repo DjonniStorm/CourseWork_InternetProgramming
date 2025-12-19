@@ -1,12 +1,16 @@
-import { EventStatusData } from '@/entities/event';
+import { EventStatusData, type EventRequest } from '@/entities/event';
 import { Button, Select, Stack, Textarea, TextInput } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useEventForm } from '../model/useEventForm';
 
-const EventForm = () => {
+type EventFormProps = {
+  onSubmit: (values: Omit<EventRequest, 'ownerId'>) => void;
+};
+
+const EventForm = ({ onSubmit }: EventFormProps) => {
   const form = useEventForm();
   return (
-    <form onSubmit={form.onSubmit((values) => console.log(values))}>
+    <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
       <Stack gap="md">
         <TextInput label="Название" {...form.getInputProps('title')} />
         <Textarea label="Описание" {...form.getInputProps('description')} />

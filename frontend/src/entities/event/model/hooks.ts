@@ -19,7 +19,13 @@ const useUserEvents = (userId: string) => {
 };
 
 const useCreateEvent = () => {
-  return useMutation({ mutationFn: (event: EventRequest) => eventApi.createEvent(event) });
+  return useMutation({
+    mutationFn: (event: EventRequest) => eventApi.createEvent(event),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+    },
+  });
 };
 
 const useUpdateEvent = () => {
@@ -36,7 +42,10 @@ const useDeleteEvent = () => {
   return useMutation({
     mutationFn: (id: string) => eventApi.deleteEvent(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['userEvents'] });
     },
   });
 };

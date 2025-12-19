@@ -7,11 +7,7 @@ const userApi = {
     return response;
   },
   getUserById: async (id: string) => {
-    const response = await apiClient.get<UserResponse>(`/user/${id}`);
-    return response;
-  },
-  createUser: async (user: UserCreate) => {
-    const response = await apiClient.post('/user', user);
+    const response = await apiClient.get<UserResponse>(`/users/${id}`);
     return response;
   },
   updateUser: async (user: UserUpdate) => {
