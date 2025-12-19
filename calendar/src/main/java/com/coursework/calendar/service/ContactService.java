@@ -23,8 +23,9 @@ public class ContactService {
     public List<ContactRequest> getContactRequestsByUserId(UUID userId) {
         List<ContactRequest> fromUser = contactRepository.findByFromUserId(userId);
         List<ContactRequest> toUser = contactRepository.findByToUserId(userId);
-        fromUser.addAll(toUser);
-        return fromUser;
+        List<ContactRequest> result = new java.util.ArrayList<>(fromUser);
+        result.addAll(toUser);
+        return result;
     }
 
     public ContactRequest getContactRequestById(UUID id) {

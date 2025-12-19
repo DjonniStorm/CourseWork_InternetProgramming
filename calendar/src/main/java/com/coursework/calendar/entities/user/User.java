@@ -20,7 +20,7 @@ public class User {
     @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 255)
+    @Column(name = "username", nullable = false, unique = false, length = 255)
     private String username;
 
     @Column(name = "email", nullable = false, unique = true, length = 255)
