@@ -7,11 +7,7 @@ const userApi = {
     return response;
   },
   getUserById: async (id: string) => {
-    const response = await apiClient.get<UserResponse>(`/user/${id}`);
-    return response;
-  },
-  createUser: async (user: UserCreate) => {
-    const response = await apiClient.post('/user', user);
+    const response = await apiClient.get<UserResponse>(`/users/${id}`);
     return response;
   },
   updateUser: async (user: UserUpdate) => {
@@ -20,6 +16,16 @@ const userApi = {
   },
   deleteUser: async (id: string) => {
     const response = await apiClient.delete<void>(`/user/${id}`);
+    return response;
+  },
+  searchUsers: async (query: string, page: number = 0, size: number = 20) => {
+    const response = await apiClient.get<{
+      content: UserResponse[];
+      totalElements: number;
+      totalPages: number;
+      number: number;
+      size: number;
+    }>(`/users/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`);
     return response;
   },
 };

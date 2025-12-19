@@ -76,12 +76,19 @@ public class ContactController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Запрос успешно создан",
                     content = @Content(schema = @Schema(implementation = ContactRequestResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
+            @ApiResponse(responseCode = "400", description = "Некорректные данные запроса"),
+            @ApiResponse(responseCode = "409", description = "Запрос уже существует между этими пользователями")
     })
     @ResponseStatus(HttpStatus.CREATED)
     public ContactRequestResponse createContactRequest(
             @Parameter(description = "Данные запроса на контакт", required = true) @RequestBody ContactRequestRs contactRequestRs) {
-        return ContactMapper.toResponse(contactService.createContactRequest(ContactMapper.toEntity(contactRequestRs)));
+        try {
+            return ContactMapper.toResponse(contactService.createContactRequest(ContactMapper.toEntity(contactRequestRs)));
+        } catch (IllegalStateException e) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

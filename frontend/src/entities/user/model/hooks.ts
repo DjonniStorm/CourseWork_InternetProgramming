@@ -30,7 +30,7 @@ const useCreateUser = () => {
 
 const useUpdateUser = () => {
   const mutation = useMutation({
-    mutationFn: (user: UserUpdate) => userApi.updateUser(user),
+    mutationFn: ({ id, user }: { id: string; user: UserUpdate }) => userApi.updateUser(id, user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -116,6 +116,20 @@ const useMe = () => {
   });
   return query;
 };
+
+const useSearchUsers = (
+  query: string,
+  page: number = 0,
+  size: number = 20,
+  enabled: boolean = true,
+) => {
+  return useQuery({
+    queryKey: ['searchUsers', query, page, size],
+    queryFn: () => userApi.searchUsers(query, page, size),
+    enabled: enabled && query.length >= 2,
+    retry: false,
+  });
+};
 export {
   useUsers,
   useUser,
@@ -127,4 +141,5 @@ export {
   useLogout,
   useRefresh,
   useMe,
+  useSearchUsers,
 };

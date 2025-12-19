@@ -1,13 +1,22 @@
 package com.coursework.calendar.mapper;
 
+import java.time.LocalDateTime;
+
 import com.coursework.calendar.api.event.dto.EventRequest;
 import com.coursework.calendar.api.event.dto.EventResponse;
 import com.coursework.calendar.entities.event.Event;
 
 public class EventMapper {
     public static Event toEntity(EventRequest eventRequest) {
-        return new Event(eventRequest.title(), eventRequest.description(), eventRequest.startTime(),
-                eventRequest.endTime(), eventRequest.ownerId(), eventRequest.status());
+        Event event = new Event();
+        event.setTitle(eventRequest.title());
+        event.setDescription(eventRequest.description());
+        event.setStartTime(eventRequest.startTime());
+        event.setEndTime(eventRequest.endTime());
+        event.setOwnerId(eventRequest.ownerId());
+        event.setStatus(eventRequest.status());
+        event.setCreatedAt(LocalDateTime.now());
+        return event;
     }
 
     public static EventResponse toResponse(Event event) {

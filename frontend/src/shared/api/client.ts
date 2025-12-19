@@ -79,7 +79,9 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const error = new Error(`HTTP error! status: ${response.status}`);
+      (error as Error & { status: number }).status = response.status;
+      throw error;
     }
 
     return response.json();

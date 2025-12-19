@@ -2,18 +2,25 @@ package com.coursework.calendar.api.user;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.coursework.calendar.api.user.dto.UserResponse;
 import com.coursework.calendar.api.user.dto.UserUpdateRequest;
+import com.coursework.calendar.entities.user.User;
 import com.coursework.calendar.mapper.UserMapper;
 import com.coursework.calendar.service.UserService;
 
@@ -78,5 +85,28 @@ public class UserController {
         public void deleteUser(
                         @Parameter(description = "Идентификатор пользователя", required = true) @PathVariable UUID id) {
                 userService.deleteUser(id);
+        }
+
+        @GetMapping("/search")
+        @Operation(summary = "Поиск пользователей", description = "Ищет пользователей по username или email с пагинацией")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Успешный поиск", content = @Content(schema = @Schema(implementation = UserResponse.class)))
+        })
+        public Page<UserResponse> searchUsers(
+                        @Parameter(description = "Поисковый запрос (username или email)", required = true) @RequestParam String q,
+                        @PageableDefault(size = 20) Pageable pageable) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                UUID currentUserId = null;
+                if (authentication != null && authentication.isAuthenticated()) {
+                        try {
+                                String email = authentication.getName();
+                                User currentUser = userService.getUserByEmail(email);
+                                currentUserId = currentUser.getId();
+                        } catch (RuntimeException e) {
+                                // Игнорируем, если пользователь не найден
+                        }
+                }
+                return userService.searchUsers(q, currentUserId, pageable)
+                                .map(UserMapper::toResponse);
         }
 }

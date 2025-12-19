@@ -1,8 +1,15 @@
-import { Avatar as MantineAvatar } from '@mantine/core';
+import { Avatar as MantineAvatar, UnstyledButton } from '@mantine/core';
 import { nameToColor } from '@/shared/utils';
+import { Link } from 'react-router';
 
 const Avatar = ({ name }: { name: string }) => {
-  return <MantineAvatar name={name} color={nameToColor(name)} />;
+  return (
+    <Link to="/profile">
+      <UnstyledButton>
+        <MantineAvatar name={name} color={nameToColor(name)} />
+      </UnstyledButton>
+    </Link>
+  );
 };
 
 export { Avatar };
