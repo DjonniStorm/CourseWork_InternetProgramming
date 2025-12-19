@@ -10,5 +10,7 @@ import com.coursework.calendar.entities.contact.ContactRequest;
 
 @Repository
 public interface ContactRepository extends JpaRepository<ContactRequest, UUID> {
-    List<ContactRequest> findByUserId(UUID userId);
+    List<ContactRequest> findByFromUserId(UUID fromUserId);
+
+    List<ContactRequest> findByToUserId(UUID toUserId);
 }

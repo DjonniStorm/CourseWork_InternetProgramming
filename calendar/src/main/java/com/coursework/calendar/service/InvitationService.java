@@ -3,9 +3,12 @@ package com.coursework.calendar.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.coursework.calendar.entities.invitation.Invitation;
 import com.coursework.calendar.repository.InvitationRepository;
 
+@Service
 public class InvitationService {
     private final InvitationRepository invitationRepository;
 

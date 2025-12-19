@@ -9,13 +9,13 @@ import com.coursework.calendar.entities.contact.ContactRequest;
 public class ContactMapper {
     public static ContactRequest toEntity(ContactRequestRs contactRequestRs) {
         return new ContactRequest(UUID.randomUUID(), contactRequestRs.createdAt(),
-                contactRequestRs.respondedAt(), contactRequestRs.fromUserId(), contactRequestRs.toUserId(),
-                contactRequestRs.status());
+                contactRequestRs.respondedAt().orElse(null), contactRequestRs.fromUserId(),
+                contactRequestRs.toUserId(), contactRequestRs.status());
     }
 
     public static ContactRequestResponse toResponse(ContactRequest contactRequest) {
         return new ContactRequestResponse(contactRequest.getId(), contactRequest.getCreatedAt(),
-                contactRequest.getRespondedAt(), contactRequest.getFromUserId(), contactRequest.getToUserId(),
-                contactRequest.getStatus());
+                java.util.Optional.ofNullable(contactRequest.getRespondedAt()), contactRequest.getFromUserId(),
+                contactRequest.getToUserId(), contactRequest.getStatus());
     }
 }

@@ -4,15 +4,44 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "contact_requests")
 public class ContactRequest {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-    private Optional<LocalDateTime> respondedAt;
+
+    @Column(name = "responded_at", nullable = true)
+    private LocalDateTime respondedAt;
+
+    @Column(name = "from_user_id", nullable = false, columnDefinition = "UUID")
     private UUID fromUserId;
+
+    @Column(name = "to_user_id", nullable = false, columnDefinition = "UUID")
     private UUID toUserId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
     private ContactRequestStatus status;
 
-    public ContactRequest(UUID id, LocalDateTime createdAt, Optional<LocalDateTime> respondedAt, UUID fromUserId,
+    // Конструктор без параметров для JPA
+    public ContactRequest() {
+    }
+
+    public ContactRequest(UUID id, LocalDateTime createdAt, LocalDateTime respondedAt, UUID fromUserId,
             UUID toUserId, ContactRequestStatus status) {
         this.id = id;
         this.createdAt = createdAt;
@@ -38,12 +67,16 @@ public class ContactRequest {
         this.createdAt = createdAt;
     }
 
-    public Optional<LocalDateTime> getRespondedAt() {
+    public LocalDateTime getRespondedAt() {
         return this.respondedAt;
     }
 
-    public void setRespondedAt(Optional<LocalDateTime> respondedAt) {
+    public void setRespondedAt(LocalDateTime respondedAt) {
         this.respondedAt = respondedAt;
+    }
+
+    public Optional<LocalDateTime> getRespondedAtOptional() {
+        return Optional.ofNullable(this.respondedAt);
     }
 
     public UUID getFromUserId() {

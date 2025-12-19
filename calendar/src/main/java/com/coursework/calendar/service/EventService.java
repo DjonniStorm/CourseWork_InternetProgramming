@@ -3,9 +3,12 @@ package com.coursework.calendar.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.coursework.calendar.entities.event.Event;
 import com.coursework.calendar.repository.EventRepository;
 
+@Service
 public class EventService {
     private final EventRepository eventRepository;
 
@@ -23,7 +26,7 @@ public class EventService {
     }
 
     public List<Event> getEventsByUserId(UUID userId) {
-        return eventRepository.findByUserId(userId);
+        return eventRepository.findByOwnerId(userId);
     }
 
     public Event createEvent(Event event) {

@@ -10,5 +10,5 @@ import com.coursework.calendar.entities.event.Event;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
-    List<Event> findByUserId(UUID userId);
+    List<Event> findByOwnerId(UUID ownerId);
 }

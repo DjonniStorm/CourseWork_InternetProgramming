@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="001-create-users-table" author="coursework">
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="password_hash" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="role" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex indexName="idx_users_username" tableName="users">
+            <column name="username" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="002-create-events-table" author="coursework">
+        <createTable tableName="events">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="true" />
+            </column>
+            <column name="start_time" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="end_time" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="owner_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="events"
+            baseColumnNames="owner_id"
+            constraintName="fk_events_owner"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+        <createIndex indexName="idx_events_owner_id" tableName="events">
+            <column name="owner_id" />
+        </createIndex>
+        <createIndex indexName="idx_events_start_time" tableName="events">
+            <column name="start_time" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="003-create-invitations-table" author="coursework">
+        <createTable tableName="invitations">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="event_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="invitations"
+            baseColumnNames="event_id"
+            constraintName="fk_invitations_event"
+            referencedTableName="events"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+        <addForeignKeyConstraint
+            baseTableName="invitations"
+            baseColumnNames="user_id"
+            constraintName="fk_invitations_user"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+        <createIndex indexName="idx_invitations_event_id" tableName="invitations">
+            <column name="event_id" />
+        </createIndex>
+        <createIndex indexName="idx_invitations_user_id" tableName="invitations">
+            <column name="user_id" />
+        </createIndex>
+        <createIndex indexName="idx_invitations_event_user" tableName="invitations">
+            <column name="event_id" />
+            <column name="user_id" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="004-create-contact-requests-table" author="coursework">
+        <createTable tableName="contact_requests">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="responded_at" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+            <column name="from_user_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+            <column name="to_user_id" type="UUID">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+            baseTableName="contact_requests"
+            baseColumnNames="from_user_id"
+            constraintName="fk_contact_requests_from_user"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+        <addForeignKeyConstraint
+            baseTableName="contact_requests"
+            baseColumnNames="to_user_id"
+            constraintName="fk_contact_requests_to_user"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+        <createIndex indexName="idx_contact_requests_from_user" tableName="contact_requests">
+            <column name="from_user_id" />
+        </createIndex>
+        <createIndex indexName="idx_contact_requests_to_user" tableName="contact_requests">
+            <column name="to_user_id" />
+        </createIndex>
+        <createIndex indexName="idx_contact_requests_from_to" tableName="contact_requests">
+            <column name="from_user_id" />
+            <column name="to_user_id" />
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
