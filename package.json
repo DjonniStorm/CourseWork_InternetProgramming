@@ -12,6 +12,7 @@
     "typescript-eslint": "^8.50.0"
   },
   "scripts": {
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "dev": "cd frontend && bun dev"
   }
 }
