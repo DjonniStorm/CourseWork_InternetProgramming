@@ -1,6 +1,7 @@
-import { useInvitations, InvitationStatus, type InvitationResponse } from '@/entities/invitation';
+import { useInvitations, type InvitationResponse } from '@/entities/invitation';
 import { useUser } from '@/entities/user';
 import { getStatusColor, getStatusLabel, nameToColor } from '@/shared/utils';
+import { EventInviteForm } from '@/features/event-invite-form';
 import {
   Card,
   Stack,
@@ -10,8 +11,10 @@ import {
   Avatar as MantineAvatar,
   Badge,
   Skeleton,
+  Button,
 } from '@mantine/core';
-import { IconUsers } from '@tabler/icons-react';
+import { modals } from '@mantine/modals';
+import { IconUsers, IconUserPlus } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
 type EventInviteesProps = {
@@ -28,6 +31,20 @@ const EventInvitees = ({ eventId }: EventInviteesProps) => {
     return invitations.filter((invitation) => invitation.eventId === eventId);
   }, [invitations, eventId]);
 
+  const handleInviteClick = () => {
+    modals.open({
+      title: 'Пригласить пользователей',
+      children: (
+        <EventInviteForm
+          eventId={eventId}
+          onInvite={() => {
+            modals.closeAll();
+          }}
+        />
+      ),
+    });
+  };
+
   if (isLoading) {
     return (
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -43,12 +60,22 @@ const EventInvitees = ({ eventId }: EventInviteesProps) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
-        <Group gap="xs">
-          <IconUsers size={20} style={{ color: 'var(--mantine-color-blue-6)' }} />
-          <Title order={3}>Приглашенные</Title>
-          <Badge variant="light" size="lg">
-            {eventInvitations.length}
-          </Badge>
+        <Group justify="space-between" align="center">
+          <Group gap="xs">
+            <IconUsers size={20} style={{ color: 'var(--mantine-color-blue-6)' }} />
+            <Title order={3}>Приглашенные</Title>
+            <Badge variant="light" size="lg">
+              {eventInvitations.length}
+            </Badge>
+          </Group>
+          <Button
+            leftSection={<IconUserPlus size={16} />}
+            size="sm"
+            variant="light"
+            onClick={handleInviteClick}
+          >
+            Пригласить
+          </Button>
         </Group>
 
         {eventInvitations.length === 0 ? (
