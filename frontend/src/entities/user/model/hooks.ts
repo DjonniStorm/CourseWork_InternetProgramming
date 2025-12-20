@@ -18,19 +18,9 @@ const useUser = (id: string) => {
   return query;
 };
 
-const useCreateUser = () => {
-  const mutation = useMutation({
-    mutationFn: (user: UserCreate) => userApi.createUser(user),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-  });
-  return mutation;
-};
-
 const useUpdateUser = () => {
   const mutation = useMutation({
-    mutationFn: ({ id, user }: { id: string; user: UserUpdate }) => userApi.updateUser(id, user),
+    mutationFn: ({ user }: { id: string; user: UserUpdate }) => userApi.updateUser(user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
@@ -52,8 +42,8 @@ const useLogin = () => {
   const mutation = useMutation({
     mutationFn: (user: UserLogin) => authApi.login(user),
     onSuccess: (data) => {
-      if (data.accessToken) {
-        tokenStorage.set(data.accessToken);
+      if (typeof data === 'object' && data !== null && 'accessToken' in data) {
+        tokenStorage.set(data.accessToken as string);
       }
       queryClient.invalidateQueries({ queryKey: ['user'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -133,7 +123,6 @@ const useSearchUsers = (
 export {
   useUsers,
   useUser,
-  useCreateUser,
   useUpdateUser,
   useDeleteUser,
   useLogin,

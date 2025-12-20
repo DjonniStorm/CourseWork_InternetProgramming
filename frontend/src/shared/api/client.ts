@@ -57,11 +57,7 @@ class ApiClient {
     return this.refreshPromise;
   }
 
-  private async requestWithAuth<T>(
-    url: string,
-    options: RequestInit,
-    retry = true
-  ): Promise<T> {
+  private async requestWithAuth<T>(url: string, options: RequestInit, retry = true): Promise<T> {
     const response = await fetch(`${this.baseUrl}${url}`, {
       ...options,
       headers: this.getHeaders(),

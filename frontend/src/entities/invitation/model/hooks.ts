@@ -8,7 +8,10 @@ const useInvitations = () => {
 };
 
 const useInvitation = (id: string) => {
-  return useQuery({ queryKey: ['invitation', id], queryFn: () => invitationApi.getInvitationById(id) });
+  return useQuery({
+    queryKey: ['invitation', id],
+    queryFn: () => invitationApi.getInvitationById(id),
+  });
 };
 
 const useUserInvitations = (userId: string) => {
@@ -51,5 +54,11 @@ const useDeleteInvitation = () => {
   });
 };
 
-export { useInvitations, useInvitation, useUserInvitations, useCreateInvitation, useUpdateInvitation, useDeleteInvitation };
-
+export {
+  useInvitations,
+  useInvitation,
+  useUserInvitations,
+  useCreateInvitation,
+  useUpdateInvitation,
+  useDeleteInvitation,
+};

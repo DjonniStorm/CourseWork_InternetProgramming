@@ -2,7 +2,7 @@ import { tokenStorage } from './token';
 
 const TOKEN_CHECK_INTERVAL = 14 * 60 * 1000; // 14 минут (токен живет 15 минут)
 
-let refreshIntervalId: NodeJS.Timeout | null = null;
+let refreshIntervalId: number | null = null;
 
 const decodeToken = (token: string): { exp?: number } | null => {
   try {
@@ -62,4 +62,3 @@ export const stopTokenRefresh = () => {
     refreshIntervalId = null;
   }
 };
-

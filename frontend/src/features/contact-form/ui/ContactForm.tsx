@@ -77,7 +77,11 @@ const ContactForm = ({ onSubmit }: ContactFormProps) => {
           Выбран: {selectedUser.username} ({selectedUser.email})
         </Text>
       )}
-      <Button onClick={handleSubmit} disabled={!selectedUser || isSubmitting} loading={isSubmitting}>
+      <Button
+        onClick={handleSubmit}
+        disabled={!selectedUser || isSubmitting}
+        loading={isSubmitting}
+      >
         Отправить запрос
       </Button>
     </Stack>
@@ -85,4 +89,3 @@ const ContactForm = ({ onSubmit }: ContactFormProps) => {
 };
 
 export { ContactForm };
-
