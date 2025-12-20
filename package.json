@@ -11,5 +11,7 @@
     "prettier": "^3.7.4",
     "typescript-eslint": "^8.50.0"
   },
-  "scripts": {}
+  "scripts": {
+    "format": "npx prettier --write ."
+  }
 }

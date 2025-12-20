@@ -62,4 +62,3 @@ export const stopTokenRefresh = () => {
     refreshIntervalId = null;
   }
 };
-
