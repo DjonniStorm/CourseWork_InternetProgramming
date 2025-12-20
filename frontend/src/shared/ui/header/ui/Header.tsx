@@ -1,4 +1,4 @@
-import { AppShell, Burger, Group, Image, UnstyledButton } from '@mantine/core';
+import { AppShell, Burger, Group, Image } from '@mantine/core';
 import { Link } from 'react-router';
 import { Avatar } from '../../avatar';
 import { Links } from '../../links';
