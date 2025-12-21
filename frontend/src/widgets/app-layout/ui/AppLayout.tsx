@@ -37,15 +37,18 @@ const AppLayout = () => {
             </UnstyledButton>
           </Link>
           <Link to="/profile">
-            <Group gap="xs" mt="md" pt="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
+            <Group
+              gap="xs"
+              mt="md"
+              pt="md"
+              style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}
+            >
               <Tooltip label="Профиль">
                 <Box>
                   <Avatar name={user?.username || ''} />
                 </Box>
               </Tooltip>
-              <UnstyledButton style={{ textAlign: 'left' }}>
-                Профиль
-              </UnstyledButton>
+              <UnstyledButton style={{ textAlign: 'left' }}>Профиль</UnstyledButton>
             </Group>
           </Link>
         </Stack>

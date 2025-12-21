@@ -33,7 +33,10 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
         <Select
           label="Статус"
           {...form.getInputProps('status')}
-          data={EventStatusDataForCreation.map((status) => ({ label: status.label, value: status.value }))}
+          data={EventStatusDataForCreation.map((status) => ({
+            label: status.label,
+            value: status.value,
+          }))}
         />
         <Button type="submit">Добавить</Button>
       </Stack>

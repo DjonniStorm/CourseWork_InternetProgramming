@@ -27,8 +27,9 @@ import {
 import { IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useHead } from '@unhead/react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import dayjs from 'dayjs';
+import { useQueryFilter } from '@/shared/lib/use-query-filters';
 
 type InvitationWithEvent = InvitationResponse & { eventTitle?: string };
 
@@ -48,7 +49,11 @@ const InvintationsPage = () => {
   const { data: events, isLoading: eventsLoading } = useEvents();
   const { mutateAsync: updateInvitation } = useUpdateInvitation();
   const { mutateAsync: deleteInvitation } = useDeleteInvitation();
-  const [sentStatusFilter, setSentStatusFilter] = useState<InvitationStatus | null>(null);
+
+  const [sentStatusFilter, setSentStatusFilter] = useQueryFilter<InvitationStatus>({
+    paramName: 'status',
+    validValues: InvitationStatusData.map((s) => s.value),
+  });
 
   const isLoading = invitationsLoading || eventsLoading;
 
