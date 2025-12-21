@@ -10,6 +10,12 @@ const EventStatusData = [
   { label: 'Отменено', value: EventStatus.CANCELLED },
 ] as const;
 
+// Статусы, доступные при создании события (без CANCELLED)
+const EventStatusDataForCreation = [
+  { label: 'Черновик', value: EventStatus.DRAFT },
+  { label: 'Опубликовано', value: EventStatus.PUBLISHED },
+] as const;
+
 interface EventRequest {
   title: string;
   description: string;
@@ -32,4 +38,4 @@ interface EventResponse {
 
 export type { EventRequest, EventResponse };
 
-export { EventStatusData, EventStatus };
+export { EventStatusData, EventStatusDataForCreation, EventStatus };

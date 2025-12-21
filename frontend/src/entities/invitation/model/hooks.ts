@@ -46,9 +46,7 @@ const useDeleteInvitation = () => {
   return useMutation({
     mutationFn: (id: string) => invitationApi.deleteInvitation(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userInvitations'] });
-    },
-    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['invitations'] });
       queryClient.invalidateQueries({ queryKey: ['userInvitations'] });
     },
   });

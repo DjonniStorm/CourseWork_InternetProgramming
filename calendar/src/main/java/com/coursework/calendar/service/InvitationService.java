@@ -40,6 +40,10 @@ public class InvitationService {
     }
 
     public void deleteInvitation(UUID id) {
+        if (!invitationRepository.existsById(id)) {
+            throw new RuntimeException("Invitation not found");
+        }
+
         invitationRepository.deleteById(id);
     }
 }

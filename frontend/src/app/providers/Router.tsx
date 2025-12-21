@@ -1,4 +1,5 @@
 import { ProfilePage } from '@/pages/profile';
+import { ErrorPage } from '@/pages/error';
 import { AppLayout } from '@/widgets/app-layout';
 import { DefaultLayout } from '@/widgets/default-layout';
 import { ProtectedRoute } from '@/shared/ui/ProtectedRoute';
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
         <AppLayout />
       </ProtectedRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',
@@ -45,22 +47,27 @@ const router = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: '/invitations',
         element: <InvintationsPage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: '/events',
         element: <EventsPage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: '/events/:id',
         element: <EventPage />,
+        errorElement: <ErrorPage />,
       },
       {
         path: '/contacts',
         element: <ContactsPage />,
+        errorElement: <ErrorPage />,
       },
     ],
   },
@@ -71,10 +78,12 @@ const router = createBrowserRouter([
         <DefaultLayout />
       </PublicRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <LoginPage />,
+        errorElement: <ErrorPage />,
       },
     ],
   },
@@ -85,16 +94,18 @@ const router = createBrowserRouter([
         <DefaultLayout />
       </PublicRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <RegisterPage />,
+        errorElement: <ErrorPage />,
       },
     ],
   },
   {
     path: '*',
-    element: <Navigate to="/login" replace />,
+    element: <ErrorPage />,
   },
 ]);
 

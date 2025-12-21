@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.coursework.calendar.api.event.dto.EventRequest;
 import com.coursework.calendar.api.event.dto.EventResponse;
 import com.coursework.calendar.mapper.EventMapper;
@@ -76,7 +78,7 @@ public class EventController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     public EventResponse createEvent(
-            @Parameter(description = "Данные события", required = true) @RequestBody EventRequest eventRequest) {
+            @Parameter(description = "Данные события", required = true) @Valid @RequestBody EventRequest eventRequest) {
         return EventMapper.toResponse(eventService.createEvent(EventMapper.toEntity(eventRequest)));
     }
 
@@ -89,7 +91,7 @@ public class EventController {
     })
     public EventResponse updateEvent(
             @Parameter(description = "Идентификатор события", required = true) @PathVariable UUID id,
-            @Parameter(description = "Обновленные данные события", required = true) @RequestBody EventRequest eventRequest) {
+            @Parameter(description = "Обновленные данные события", required = true) @Valid @RequestBody EventRequest eventRequest) {
         return EventMapper.toResponse(eventService.updateEvent(id, EventMapper.toEntity(eventRequest)));
     }
 

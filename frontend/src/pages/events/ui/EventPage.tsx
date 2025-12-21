@@ -1,6 +1,14 @@
-import { useEvent } from '@/entities/event';
+import { useEvent, useUpdateEvent, EventStatus } from '@/entities/event';
+import { useMe } from '@/entities/user';
 import { useUser } from '@/entities/user';
-import { formatDateTime, getEventStatusLabel, getEventStatusColor } from '@/shared/utils';
+import {
+  formatDateTime,
+  getEventStatusLabel,
+  getEventStatusColor,
+  getEventState,
+  getEventStateLabel,
+  getEventStateColor,
+} from '@/shared/utils';
 import { EventInvitees } from '@/features/event-invitees';
 import {
   Button,
@@ -23,10 +31,15 @@ import {
   IconFileText,
   IconTag,
   IconArrowLeft,
+  IconCheck,
+  IconX,
+  IconEye,
 } from '@tabler/icons-react';
 import { useHead } from '@unhead/react';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import { notifications } from '@mantine/notifications';
+import { modals } from '@mantine/modals';
 import z from 'zod';
 
 const idSchema = z.object({
@@ -45,10 +58,117 @@ const EventPage = () => {
   }
 
   const { data: event, isLoading } = useEvent(id ?? '');
+  const { data: currentUser } = useMe();
+  const { data: user } = useUser(event?.ownerId ?? '');
+  const { mutateAsync: updateEvent } = useUpdateEvent();
+
   useHead({
     title: `Событие: ${event?.title ?? ''}`,
   });
-  const { data: user } = useUser(event?.ownerId ?? '');
+
+  const eventState = event ? getEventState(event) : null;
+  const isOwner = currentUser?.id === event?.ownerId;
+
+  const getNextStatus = (currentStatus: EventStatus): EventStatus | null => {
+    switch (currentStatus) {
+      case EventStatus.DRAFT:
+        return EventStatus.PUBLISHED;
+      case EventStatus.PUBLISHED:
+        return EventStatus.CANCELLED;
+      case EventStatus.CANCELLED:
+        return EventStatus.PUBLISHED;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusButtonLabel = (currentStatus: EventStatus): string => {
+    switch (currentStatus) {
+      case EventStatus.DRAFT:
+        return 'Опубликовать';
+      case EventStatus.PUBLISHED:
+        return 'Отменить';
+      case EventStatus.CANCELLED:
+        return 'Восстановить';
+      default:
+        return '';
+    }
+  };
+
+  const getStatusButtonIcon = (currentStatus: EventStatus) => {
+    switch (currentStatus) {
+      case EventStatus.DRAFT:
+        return <IconEye size={18} />;
+      case EventStatus.PUBLISHED:
+        return <IconX size={18} />;
+      case EventStatus.CANCELLED:
+        return <IconCheck size={18} />;
+      default:
+        return null;
+    }
+  };
+
+  const handleStatusChange = async () => {
+    if (!event) {
+      return;
+    }
+
+    const nextStatus = getNextStatus(event.status);
+    if (!nextStatus) {
+      return;
+    }
+
+    const now = new Date();
+    const startTime = new Date(event.startTime);
+    const isPastEvent = startTime < now;
+
+    if (event.status === EventStatus.DRAFT && isPastEvent) {
+      modals.openConfirmModal({
+        title: 'Подтверждение публикации',
+        children: (
+          <Text size="sm">
+            Дата события уже прошла. Событие будет помечено как завершенное. Продолжить?
+          </Text>
+        ),
+        labels: { confirm: 'Продолжить', cancel: 'Отмена' },
+        confirmProps: { color: 'blue' },
+        onConfirm: async () => {
+          await performStatusChange(event, nextStatus);
+        },
+      });
+      return;
+    }
+
+    await performStatusChange(event, nextStatus);
+  };
+
+  const performStatusChange = async (eventData: typeof event, nextStatus: EventStatus) => {
+    if (!eventData) {
+      return;
+    }
+
+    try {
+      await updateEvent({
+        id: eventData.id,
+        event: {
+          ...eventData,
+          status: nextStatus,
+        },
+      });
+      notifications.show({
+        title: 'Статус обновлен',
+        message: `Событие успешно ${getStatusButtonLabel(eventData.status).toLowerCase()}`,
+        color: 'green',
+      });
+    } catch (error) {
+      console.error(error);
+      notifications.show({
+        title: 'Ошибка',
+        message: 'Не удалось изменить статус события',
+        color: 'red',
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -93,15 +213,31 @@ const EventPage = () => {
                   <Title order={1} mb="xs">
                     {event.title}
                   </Title>
-                  <Badge
-                    color={getEventStatusColor(event.status)}
-                    variant="light"
-                    leftSection={<IconTag size={14} />}
-                    size="lg"
-                  >
-                    {getEventStatusLabel(event.status)}
-                  </Badge>
+                  <Group gap="xs" mb="xs">
+                    <Badge
+                      color={getEventStatusColor(event.status)}
+                      variant="light"
+                      leftSection={<IconTag size={14} />}
+                      size="lg"
+                    >
+                      {getEventStatusLabel(event.status)}
+                    </Badge>
+                    {eventState && (
+                      <Badge color={getEventStateColor(eventState)} variant="light" size="lg">
+                        {getEventStateLabel(eventState)}
+                      </Badge>
+                    )}
+                  </Group>
                 </Box>
+                {isOwner && getNextStatus(event.status) && (
+                  <Button
+                    leftSection={getStatusButtonIcon(event.status)}
+                    onClick={handleStatusChange}
+                    variant="light"
+                  >
+                    {getStatusButtonLabel(event.status)}
+                  </Button>
+                )}
               </Group>
 
               <Divider />

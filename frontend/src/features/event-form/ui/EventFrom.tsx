@@ -1,4 +1,4 @@
-import { EventStatusData, type EventRequest } from '@/entities/event';
+import { EventStatusDataForCreation, type EventRequest } from '@/entities/event';
 import { Button, Select, Stack, Textarea, TextInput } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useEventForm } from '../model/useEventForm';
@@ -33,7 +33,7 @@ const EventForm = ({ onSubmit }: EventFormProps) => {
         <Select
           label="Статус"
           {...form.getInputProps('status')}
-          data={EventStatusData.map((status) => ({ label: status.label, value: status.value }))}
+          data={EventStatusDataForCreation.map((status) => ({ label: status.label, value: status.value }))}
         />
         <Button type="submit">Добавить</Button>
       </Stack>

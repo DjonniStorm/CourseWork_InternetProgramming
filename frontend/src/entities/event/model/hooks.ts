@@ -34,6 +34,8 @@ const useUpdateEvent = () => {
       eventApi.updateEvent(id, event),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['event'] });
+      queryClient.invalidateQueries({ queryKey: ['userEvents'] });
     },
   });
 };

@@ -7,7 +7,11 @@ type ContactSearchInputProps = {
   placeholder?: string;
 };
 
-const ContactSearchInput = ({ value, onChange, placeholder = 'Поиск контакта...' }: ContactSearchInputProps) => {
+const ContactSearchInput = ({
+  value,
+  onChange,
+  placeholder = 'Поиск контакта...',
+}: ContactSearchInputProps) => {
   return (
     <TextInput
       placeholder={placeholder}
@@ -19,4 +23,3 @@ const ContactSearchInput = ({ value, onChange, placeholder = 'Поиск кон�
 };
 
 export { ContactSearchInput };
-

@@ -1,9 +1,10 @@
 import { Header } from '@/shared/ui/header';
-import { AppShell, UnstyledButton } from '@mantine/core';
+import { AppShell, Stack, UnstyledButton, Group, Box, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Outlet } from 'react-router';
+import { Outlet, Link } from 'react-router';
 import { useTokenRefresh } from '@/shared/lib/use-token-refresh';
 import { useMe } from '@/entities/user';
+import { Avatar } from '@/shared/ui/avatar';
 
 const AppLayout = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -18,11 +19,36 @@ const AppLayout = () => {
     >
       <Header.App opened={opened} toggle={toggle} name={user?.username || ''} />
 
-      <AppShell.Navbar py="md" px={4}>
-        <UnstyledButton>Home</UnstyledButton>
-        <UnstyledButton>Blog</UnstyledButton>
-        <UnstyledButton>Contacts</UnstyledButton>
-        <UnstyledButton>Support</UnstyledButton>
+      <AppShell.Navbar py="md" px="md">
+        <Stack gap="md">
+          <Link to="/events">
+            <UnstyledButton w="100%" style={{ textAlign: 'left' }}>
+              События
+            </UnstyledButton>
+          </Link>
+          <Link to="/invitations">
+            <UnstyledButton w="100%" style={{ textAlign: 'left' }}>
+              Приглашения
+            </UnstyledButton>
+          </Link>
+          <Link to="/contacts">
+            <UnstyledButton w="100%" style={{ textAlign: 'left' }}>
+              Контакты
+            </UnstyledButton>
+          </Link>
+          <Link to="/profile">
+            <Group gap="xs" mt="md" pt="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
+              <Tooltip label="Профиль">
+                <Box>
+                  <Avatar name={user?.username || ''} />
+                </Box>
+              </Tooltip>
+              <UnstyledButton style={{ textAlign: 'left' }}>
+                Профиль
+              </UnstyledButton>
+            </Group>
+          </Link>
+        </Stack>
       </AppShell.Navbar>
 
       <AppShell.Main>

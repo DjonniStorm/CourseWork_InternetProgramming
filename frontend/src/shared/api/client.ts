@@ -80,7 +80,31 @@ class ApiClient {
       throw error;
     }
 
-    return response.json();
+    // Статусы без тела ответа (204 No Content, 205 Reset Content и т.д.)
+    if (response.status === 204 || response.status === 205) {
+      return null as T;
+    }
+
+    // Проверяем наличие контента перед парсингом JSON
+    const contentType = response.headers.get('content-type');
+    const contentLength = response.headers.get('content-length');
+
+    if (!contentType?.includes('application/json') || contentLength === '0') {
+      return null as T;
+    }
+
+    // Пытаемся получить текст, чтобы проверить, не пустой ли ответ
+    const text = await response.text();
+    if (!text || text.trim() === '') {
+      return null as T;
+    }
+
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      // Если не удалось распарсить JSON, возвращаем null
+      return null as T;
+    }
   }
 
   public async get<T>(url: string): Promise<T> {

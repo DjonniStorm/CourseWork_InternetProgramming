@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.coursework.calendar.api.contact.dto.ContactRequestResponse;
 import com.coursework.calendar.api.contact.dto.ContactRequestRs;
 import com.coursework.calendar.mapper.ContactMapper;
@@ -81,7 +83,7 @@ public class ContactController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     public ContactRequestResponse createContactRequest(
-            @Parameter(description = "Данные запроса на контакт", required = true) @RequestBody ContactRequestRs contactRequestRs) {
+            @Parameter(description = "Данные запроса на контакт", required = true) @Valid @RequestBody ContactRequestRs contactRequestRs) {
         try {
             return ContactMapper.toResponse(contactService.createContactRequest(ContactMapper.toEntity(contactRequestRs)));
         } catch (IllegalStateException e) {
@@ -101,7 +103,7 @@ public class ContactController {
     })
     public ContactRequestResponse updateContactRequest(
             @Parameter(description = "Идентификатор запроса", required = true) @PathVariable UUID id,
-            @Parameter(description = "Обновленные данные запроса", required = true) @RequestBody ContactRequestRs contactRequestRs) {
+            @Parameter(description = "Обновленные данные запроса", required = true) @Valid @RequestBody ContactRequestRs contactRequestRs) {
         return ContactMapper
                 .toResponse(contactService.updateContactRequest(id, ContactMapper.toEntity(contactRequestRs)));
     }
