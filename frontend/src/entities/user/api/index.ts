@@ -10,8 +10,8 @@ const userApi = {
     const response = await apiClient.get<UserResponse>(`/users/${id}`);
     return response;
   },
-  updateUser: async (user: UserUpdate) => {
-    const response = await apiClient.put('/user', user);
+  updateUser: async (id: string, user: UserUpdate) => {
+    const response = await apiClient.put<UserResponse>(`/users/${id}`, user);
     return response;
   },
   deleteUser: async (id: string) => {

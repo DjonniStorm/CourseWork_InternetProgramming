@@ -44,9 +44,13 @@ public class UserService {
 
     public User updateUser(UUID id, User userUpdate) {
         User existingUser = getUserById(id);
-        existingUser.setEmail(userUpdate.getEmail());
-        existingUser.setUsername(userUpdate.getUsername());
-        existingUser.setRole(userUpdate.getRole());
+        existingUser.setEmail(userUpdate.getEmail() != null && !userUpdate.getEmail().isEmpty() ? userUpdate.getEmail()
+                : existingUser.getEmail());
+        existingUser.setUsername(
+                userUpdate.getUsername() != null && !userUpdate.getUsername().isEmpty() ? userUpdate.getUsername()
+                        : existingUser.getUsername());
+        existingUser.setRole(
+                userUpdate.getRole() != null ? userUpdate.getRole() : existingUser.getRole());
         if (userUpdate.getPasswordHash() != null && !userUpdate.getPasswordHash().isEmpty()) {
             String hashedPassword = passwordEncoder.encode(userUpdate.getPasswordHash());
             existingUser.setPasswordHash(hashedPassword);

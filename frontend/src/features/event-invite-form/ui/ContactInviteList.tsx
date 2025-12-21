@@ -34,3 +34,4 @@ const ContactInviteList = ({ contacts, onInvite, searchQuery }: ContactInviteLis
 
 export { ContactInviteList };
 
+

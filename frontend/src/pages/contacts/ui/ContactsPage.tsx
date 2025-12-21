@@ -3,6 +3,7 @@ import {
   useUserContacts,
   useUpdateContact,
   type ContactRequestResponse,
+  useDeleteContact,
 } from '@/entities/contact';
 import { useMe, useUser } from '@/entities/user';
 import { nameToColor } from '@/shared/utils';
@@ -19,11 +20,14 @@ import {
   Pill,
   Avatar as MantineAvatar,
   Tabs,
+  Tooltip,
+  ActionIcon,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { useHead } from '@unhead/react';
 import { useMemo } from 'react';
+import { IconX } from '@tabler/icons-react';
 
 const ContactsPage = () => {
   useHead({
@@ -207,7 +211,36 @@ type ContactCardProps = {
 
 const ContactCard = ({ contactUserId }: ContactCardProps) => {
   const { data: contactUser } = useUser(contactUserId);
+  const { mutateAsync: deleteContactMutation } = useDeleteContact();
   const contactName = contactUser?.username || contactUserId.slice(0, 8);
+
+  const handleDeleteContact = async (contactId: string) => {
+    modals.openConfirmModal({
+      title: `Удалить контакт ${contactName}?`,
+      children: <Text size="sm">Вы уверены, что хотите удалить контакт {contactName}?</Text>,
+      labels: { confirm: 'Удалить', cancel: 'Отмена' },
+      onCancel: () => console.log('Отмена'),
+      onConfirm: async () => {
+        try {
+          await deleteContactMutation(contactId);
+          notifications.show({
+            title: 'Контакт удален',
+            message: 'Контакт успешно удален',
+            color: 'green',
+            icon: <IconX size={16} />,
+          });
+        } catch (error) {
+          console.error(error);
+          notifications.show({
+            title: 'Ошибка',
+            message: 'Не удалось удалить контакт',
+            color: 'red',
+            icon: <IconX size={16} />,
+          });
+        }
+      },
+    });
+  };
 
   return (
     <Card withBorder shadow="sm" padding="lg" radius="md">
@@ -221,6 +254,11 @@ const ContactCard = ({ contactUserId }: ContactCardProps) => {
             {contactUser?.email || 'Email не указан'}
           </Text>
         </Stack>
+        <Tooltip label="Удалить контакт">
+          <ActionIcon onClick={() => handleDeleteContact(contactUserId)}>
+            <IconX size={16} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
     </Card>
   );
@@ -276,7 +314,7 @@ const OutgoingRequestCard = ({ contact }: OutgoingRequestCardProps) => {
 
   return (
     <Card withBorder shadow="sm" padding="lg" radius="md">
-      <Group>
+      <Group align="flex-start">
         <MantineAvatar name={contactName} color={nameToColor(contactName)} size="lg" />
         <Stack gap="xs" style={{ flex: 1 }}>
           <Text fw={600} size="lg">
@@ -288,10 +326,15 @@ const OutgoingRequestCard = ({ contact }: OutgoingRequestCardProps) => {
           <Text size="xs" c="dimmed">
             Отправлен: {new Date(contact.createdAt).toLocaleString('ru-RU')}
           </Text>
-          <Pill color="yellow" variant="light">
+          <Pill color="yellow" variant="light" maw="fit-content">
             Ожидает ответа
           </Pill>
         </Stack>
+        <Tooltip label="Отменить запрос">
+          <ActionIcon>
+            <IconX size={16} />
+          </ActionIcon>
+        </Tooltip>
       </Group>
     </Card>
   );

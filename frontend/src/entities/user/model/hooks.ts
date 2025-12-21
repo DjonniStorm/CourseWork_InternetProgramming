@@ -20,9 +20,11 @@ const useUser = (id: string) => {
 
 const useUpdateUser = () => {
   const mutation = useMutation({
-    mutationFn: ({ user }: { id: string; user: UserUpdate }) => userApi.updateUser(user),
+    mutationFn: ({ id, user }: { id: string; user: UserUpdate }) => userApi.updateUser(id, user),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['me'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
     },
   });
   return mutation;
