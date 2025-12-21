@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.coursework.calendar.api.user.dto.AuthResponse;
 import com.coursework.calendar.api.user.dto.UserCreateRequest;
 import com.coursework.calendar.api.user.dto.UserLoginRequest;
@@ -51,7 +53,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Успешная авторизация", content = @Content(schema = @Schema(implementation = AuthResponse.class))),
             @ApiResponse(responseCode = "401", description = "Неверный email или пароль")
     })
-    public ResponseEntity<AuthResponse> login(@RequestBody UserLoginRequest userLoginRequest,
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody UserLoginRequest userLoginRequest,
             HttpServletResponse response) {
         try {
             User user = userService.getUserByEmail(userLoginRequest.email());
@@ -84,7 +86,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса"),
             @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
     })
-    public ResponseEntity<Void> register(@RequestBody UserCreateRequest userCreateRequest) {
+    public ResponseEntity<Void> register(@Valid @RequestBody UserCreateRequest userCreateRequest) {
         try {
             userService.getUserByEmail(userCreateRequest.email());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();

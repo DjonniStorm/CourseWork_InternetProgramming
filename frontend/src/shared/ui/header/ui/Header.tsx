@@ -42,10 +42,12 @@ type AppHeaderProps = {
 const AppHeader = ({ opened, toggle, name }: AppHeaderProps) => {
   return (
     <AppShell.Header>
-      <Group h="100%" px="md">
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-        <Group justify="space-between" style={{ flex: 1 }}>
+      <Group h="100%" px="md" justify="space-between">
+        <Group>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Logo />
+        </Group>
+        <Group visibleFrom="sm" gap="md">
           <Links dir="row" gap={10} />
           <Tooltip label="Профиль">
             <Box>

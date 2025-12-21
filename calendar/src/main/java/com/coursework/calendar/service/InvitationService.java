@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.coursework.calendar.entities.invitation.Invitation;
-import com.coursework.calendar.entities.invitation.InvitationStatus;
 import com.coursework.calendar.repository.InvitationRepository;
 
 @Service

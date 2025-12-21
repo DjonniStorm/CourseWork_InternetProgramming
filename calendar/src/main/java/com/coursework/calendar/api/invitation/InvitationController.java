@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.coursework.calendar.api.invitation.dto.InvitationRequest;
 import com.coursework.calendar.api.invitation.dto.InvitationResponse;
 import com.coursework.calendar.mapper.InvitationMapper;
@@ -76,7 +78,7 @@ public class InvitationController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     public InvitationResponse createInvitation(
-            @Parameter(description = "Данные приглашения", required = true) @RequestBody InvitationRequest invitationRequest) {
+            @Parameter(description = "Данные приглашения", required = true) @Valid @RequestBody InvitationRequest invitationRequest) {
         return InvitationMapper
                 .toResponse(invitationService.createInvitation(InvitationMapper.toEntity(invitationRequest)));
     }
@@ -90,7 +92,7 @@ public class InvitationController {
     })
     public InvitationResponse updateInvitation(
             @Parameter(description = "Идентификатор приглашения", required = true) @PathVariable UUID id,
-            @Parameter(description = "Обновленные данные приглашения", required = true) @RequestBody InvitationRequest invitationRequest) {
+            @Parameter(description = "Обновленные данные приглашения", required = true) @Valid @RequestBody InvitationRequest invitationRequest) {
         return InvitationMapper
                 .toResponse(invitationService.updateInvitation(id, InvitationMapper.toEntity(invitationRequest)));
     }

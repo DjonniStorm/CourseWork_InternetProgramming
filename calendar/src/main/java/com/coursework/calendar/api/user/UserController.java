@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.coursework.calendar.api.user.dto.UserResponse;
 import com.coursework.calendar.api.user.dto.UserUpdateRequest;
 import com.coursework.calendar.entities.user.User;
@@ -71,7 +73,7 @@ public class UserController {
         })
         public UserResponse updateUser(
                         @Parameter(description = "Идентификатор пользователя", required = true) @PathVariable UUID id,
-                        @Parameter(description = "Обновленные данные пользователя", required = true) @RequestBody UserUpdateRequest userUpdateRequest) {
+                        @Parameter(description = "Обновленные данные пользователя", required = true) @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
                 return UserMapper.toResponse(userService.updateUser(id, UserMapper.toEntity(id, userUpdateRequest)));
         }
 

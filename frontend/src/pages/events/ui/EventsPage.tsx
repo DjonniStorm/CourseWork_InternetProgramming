@@ -4,6 +4,8 @@ import {
   useUserEvents,
   type EventRequest,
   type EventResponse,
+  EventStatus,
+  EventStatusData,
 } from '@/entities/event';
 import { useMe } from '@/entities/user';
 import { EventForm } from '@/features/event-form';
@@ -30,11 +32,15 @@ import {
   Tooltip,
   Divider,
   Box,
+  Select,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
 import { useHead } from '@unhead/react';
+import { useMemo, useState } from 'react';
+
+type SortOrder = 'asc' | 'desc';
 
 const EventsPage = () => {
   useHead({
@@ -51,6 +57,30 @@ const EventsPage = () => {
   const { mutateAsync: createEventMutation } = useCreateEvent();
   const { mutateAsync: deleteEventMutation } = useDeleteEvent();
   const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState<EventStatus | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder | null>(null);
+
+  const filteredAndSortedEvents = useMemo(() => {
+    if (!events) return [];
+
+    let filtered = events;
+
+    // Фильтр по статусу
+    if (statusFilter) {
+      filtered = filtered.filter((event) => event.status === statusFilter);
+    }
+
+    // Сортировка по дате
+    if (sortOrder) {
+      filtered = [...filtered].sort((a, b) => {
+        const dateA = new Date(a.startTime).getTime();
+        const dateB = new Date(b.startTime).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+    }
+
+    return filtered;
+  }, [events, statusFilter, sortOrder]);
   const createEvent = async (event: Omit<EventRequest, 'ownerId'>) => {
     try {
       await createEventMutation({ ...event, ownerId: user?.id ?? '' });
@@ -111,16 +141,44 @@ const EventsPage = () => {
         <Title order={1}>События</Title>
         <Button onClick={handleCreateEvent}>Добавить событие</Button>
       </Group>
+
+      {!isLoading && events && events.length > 0 && (
+        <Group gap="md">
+          <Select
+            placeholder="Фильтр по статусу"
+            data={EventStatusData.map((status) => ({ label: status.label, value: status.value }))}
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value as EventStatus | null)}
+            clearable
+            w={200}
+          />
+          <Select
+            placeholder="Сортировка по дате"
+            data={[
+              { label: 'По возрастанию', value: 'asc' },
+              { label: 'По убыванию', value: 'desc' },
+            ]}
+            value={sortOrder}
+            onChange={(value) => setSortOrder(value as SortOrder | null)}
+            clearable
+            w={200}
+          />
+        </Group>
+      )}
+
       {isLoading &&
         Array.from({ length: 5 }).map((_, index) => <Skeleton key={index} height={200} />)}
       {!isLoading && events?.length === 0 && <Text>Нет событий</Text>}
-      {!isLoading && events?.length && events.length > 0 && (
+      {!isLoading && filteredAndSortedEvents.length === 0 && events && events.length > 0 && (
+        <Text>Нет событий, соответствующих выбранным фильтрам</Text>
+      )}
+      {!isLoading && filteredAndSortedEvents.length > 0 && (
         <SimpleGrid
           cols={{ base: 1, sm: 2, lg: 5 }}
           spacing={{ base: 10, sm: 'xl' }}
           verticalSpacing={{ base: 'md', sm: 'xl' }}
         >
-          {events?.map((event) => (
+          {filteredAndSortedEvents.map((event) => (
             <EventCard
               key={event.id}
               event={event}
