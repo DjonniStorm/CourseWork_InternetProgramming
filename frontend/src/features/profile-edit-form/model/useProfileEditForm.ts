@@ -27,7 +27,9 @@ const createProfileEditFormSchema = (initialEmail: string, initialUsername: stri
     email: z
       .string()
       .refine(
-        (val) => val === initialEmail || (val !== '' && z.string().email().safeParse(val).success),
+        (val) =>
+          val === initialEmail ||
+          (val !== '' && z.email({ message: 'Введите корректный email' }).safeParse(val).success),
         {
           message: 'Введите корректный email',
         },

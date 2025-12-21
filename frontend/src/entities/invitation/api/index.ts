@@ -29,4 +29,3 @@ const invitationApi = {
 };
 
 export { invitationApi };
-

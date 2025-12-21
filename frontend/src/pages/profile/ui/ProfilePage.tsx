@@ -66,7 +66,9 @@ const ProfilePage = () => {
   }, [user, invitations, events, contacts]);
 
   const handleEdit = () => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     modals.open({
       title: 'Редактировать профиль',
