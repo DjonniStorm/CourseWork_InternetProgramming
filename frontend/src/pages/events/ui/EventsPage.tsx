@@ -38,7 +38,8 @@ import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router';
 import { useHead } from '@unhead/react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useQueryFilter } from '@/shared/lib/use-query-filters';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -57,8 +58,16 @@ const EventsPage = () => {
   const { mutateAsync: createEventMutation } = useCreateEvent();
   const { mutateAsync: deleteEventMutation } = useDeleteEvent();
   const navigate = useNavigate();
-  const [statusFilter, setStatusFilter] = useState<EventStatus | null>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder | null>(null);
+
+  const [statusFilter, setStatusFilter] = useQueryFilter<EventStatus>({
+    paramName: 'status',
+    validValues: EventStatusData.map((s) => s.value),
+  });
+
+  const [sortOrder, setSortOrder] = useQueryFilter<SortOrder>({
+    paramName: 'sort',
+    validValues: ['asc', 'desc'] as const,
+  });
 
   const filteredAndSortedEvents = useMemo(() => {
     if (!events) return [];
