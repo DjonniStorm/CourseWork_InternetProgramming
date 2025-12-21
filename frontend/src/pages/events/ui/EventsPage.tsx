@@ -1,5 +1,4 @@
 import {
-  EventStatus,
   useCreateEvent,
   useDeleteEvent,
   useUserEvents,
@@ -8,7 +7,15 @@ import {
 } from '@/entities/event';
 import { useMe } from '@/entities/user';
 import { EventForm } from '@/features/event-form';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import {
+  formatDateTime,
+  getEventStatusLabel,
+  getEventStatusColor,
+  getEventState,
+  getEventStateLabel,
+  getEventStateColor,
+} from '@/shared/utils';
+import { IconEdit, IconTrash, IconCalendar, IconClock, IconTag } from '@tabler/icons-react';
 import {
   Button,
   Card,
@@ -18,8 +25,11 @@ import {
   Text,
   SimpleGrid,
   Skeleton,
-  Pill,
+  Badge,
   ActionIcon,
+  Tooltip,
+  Divider,
+  Box,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
@@ -131,34 +141,116 @@ type EventCardProps = {
 };
 
 const EventCard = ({ event, onEdit, onDelete }: EventCardProps) => {
+  const navigate = useNavigate();
+  const statusColor = getEventStatusColor(event.status);
+  const statusLabel = getEventStatusLabel(event.status);
+  const eventState = getEventState(event);
+  const stateLabel = eventState ? getEventStateLabel(eventState) : null;
+  const stateColor = eventState ? getEventStateColor(eventState) : null;
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, [role="button"]')) {
+      return;
+    }
+    navigate(`/events/${event.id}`);
+  };
+
   return (
-    <Card>
-      <Group justify="space-between">
-        <Stack>
-          <Title order={2}>{event.title}</Title>
-          <Text>{event.description}</Text>
-          <Pill
-            ta="center"
-            color={
-              event.status === EventStatus.DRAFT
-                ? 'gray'
-                : event.status === EventStatus.PUBLISHED
-                  ? 'green'
-                  : 'red'
-            }
-          >
-            {event.status}
-          </Pill>
+    <Card
+      withBorder
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      style={{ cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = 'var(--mantine-shadow-md)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'var(--mantine-shadow-sm)';
+      }}
+      onClick={handleCardClick}
+    >
+      <Stack gap="md">
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <Title order={3} size="h4" lineClamp={2} mb="xs">
+              {event.title}
+            </Title>
+            <Group gap="xs" mb="xs">
+              <Badge
+                color={statusColor}
+                variant="light"
+                leftSection={<IconTag size={12} />}
+                size="sm"
+              >
+                {statusLabel}
+              </Badge>
+              {stateLabel && stateColor && (
+                <Badge color={stateColor as string} variant="light" size="sm">
+                  {stateLabel}
+                </Badge>
+              )}
+            </Group>
+          </Box>
+          <Group gap={4} onClick={(e) => e.stopPropagation()}>
+            <Tooltip label="Редактировать">
+              <ActionIcon
+                variant="subtle"
+                color="blue"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+              >
+                <IconEdit size={18} />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Удалить">
+              <ActionIcon
+                variant="subtle"
+                color="red"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <IconTrash size={18} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+        </Group>
+
+        {event.description && (
+          <Text size="sm" c="dimmed" lineClamp={2}>
+            {event.description}
+          </Text>
+        )}
+
+        <Divider />
+
+        <Stack gap="xs">
+          <Group gap="xs" wrap="nowrap">
+            <IconCalendar
+              size={16}
+              style={{ color: 'var(--mantine-color-blue-6)', flexShrink: 0 }}
+            />
+            <Text size="xs" c="dimmed" truncate>
+              {formatDateTime(event.startTime)}
+            </Text>
+          </Group>
+          <Group gap="xs" wrap="nowrap">
+            <IconClock
+              size={16}
+              style={{ color: 'var(--mantine-color-orange-6)', flexShrink: 0 }}
+            />
+            <Text size="xs" c="dimmed" truncate>
+              До {formatDateTime(event.endTime)}
+            </Text>
+          </Group>
         </Stack>
-        <Stack>
-          <ActionIcon onClick={onEdit}>
-            <IconEdit />
-          </ActionIcon>
-          <ActionIcon bg="red" onClick={onDelete}>
-            <IconTrash />
-          </ActionIcon>
-        </Stack>
-      </Group>
+      </Stack>
     </Card>
   );
 };
