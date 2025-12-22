@@ -70,7 +70,7 @@
         {
             "label": "Maven: Сборка (front)",
             "type": "shell",
-            "command": "mvn clean package -Pfront",
+            "command": "mvn clean package -Pfront -DskipTests",
             "options": {
                 "cwd": "${workspaceFolder}/calendar"
             },
@@ -203,6 +203,35 @@
                 "reveal": "always",
                 "panel": "new"
             }
+        },
+        {
+            "label": "Maven: Запуск JAR (front+prod)",
+            "type": "shell",
+            "command": "java -jar target/calendar-0.0.1-SNAPSHOT.jar",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": ["/c"]
+                },
+                "env": {
+                    "SPRING_PROFILES_ACTIVE": "prod",
+                    "JWT_SECRET": "${env:JWT_SECRET:your-256-bit-secret-key-for-jwt-token-generation-minimum-32-characters}",
+                    "DB_USERNAME": "${env:DB_USERNAME:postgres}",
+                    "DB_PASSWORD": "${env:DB_PASSWORD:postgres}"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true,
+            "dependsOn": "Maven: Сборка (front)"
         }
     ]
 }

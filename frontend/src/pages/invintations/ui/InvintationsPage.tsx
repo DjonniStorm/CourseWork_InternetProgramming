@@ -22,7 +22,6 @@ import {
   SimpleGrid,
   ActionIcon,
   Tooltip,
-  Center,
 } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';

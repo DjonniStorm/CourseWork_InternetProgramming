@@ -1,5 +1,8 @@
 package com.coursework.calendar.api.user;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,14 +40,30 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/api/auth")
 @Tag(name = "Авторизация", description = "API для авторизации и регистрации пользователей")
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@system.local";
+
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final Environment environment;
 
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService,
+            Environment environment) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.environment = environment;
+    }
+
+    private boolean isNopassProfile() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        for (String profile : activeProfiles) {
+            if ("nopass".equals(profile)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @PostMapping("/login")
@@ -84,9 +103,15 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная регистрация"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса"),
+            @ApiResponse(responseCode = "403", description = "Регистрация отключена в режиме nopass"),
             @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
     })
     public ResponseEntity<Void> register(@Valid @RequestBody UserCreateRequest userCreateRequest) {
+        // В профиле nopass регистрация отключена
+        if (isNopassProfile()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         try {
             userService.getUserByEmail(userCreateRequest.email());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -109,6 +134,30 @@ public class AuthController {
     public ResponseEntity<AuthResponse> refresh(
             @Parameter(description = "Refresh token из cookie") @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response) {
+        // В профиле nopass всегда возвращаем данные дефолтного админа
+        if (isNopassProfile()) {
+            try {
+                User adminUser = userService.getUserByEmail(DEFAULT_ADMIN_EMAIL);
+                String newAccessToken = jwtService.generateAccessToken(adminUser);
+                String newRefreshToken = jwtService.generateRefreshToken(adminUser);
+
+                Cookie refreshTokenCookie = new Cookie("refreshToken", newRefreshToken);
+                refreshTokenCookie.setHttpOnly(true);
+                refreshTokenCookie.setSecure(false);
+                refreshTokenCookie.setPath("/");
+                refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
+                response.addCookie(refreshTokenCookie);
+
+                AuthResponse authResponse = new AuthResponse(newAccessToken, adminUser.getId(), adminUser.getEmail(),
+                        adminUser.getUsername());
+                return ResponseEntity.ok(authResponse);
+            } catch (Exception e) {
+                logger.error("Error in refresh endpoint for nopass profile: {}", e.getMessage(), e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+
+        // Обычная логика для других профилей
         if (refreshToken == null || !jwtService.validateRefreshToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -122,7 +171,7 @@ public class AuthController {
         Cookie refreshTokenCookie = new Cookie("refreshToken", newRefreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(false);
-        refreshTokenCookie.setPath("/api/auth");
+        refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
 

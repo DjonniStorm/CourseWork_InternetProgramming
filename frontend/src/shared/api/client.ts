@@ -26,7 +26,7 @@ class ApiClient {
     }
 
     this.isRefreshing = true;
-    this.refreshPromise = fetch(`${this.baseUrl}/api/auth/refresh`, {
+    this.refreshPromise = fetch(`${this.baseUrl}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

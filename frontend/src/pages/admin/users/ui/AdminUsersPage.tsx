@@ -18,6 +18,8 @@ import { useHead } from '@unhead/react';
 import { notifications } from '@mantine/notifications';
 import { Navigate } from 'react-router';
 
+const SYSTEM_ADMIN_EMAIL = 'admin@system.local';
+
 const AdminUsersPage = () => {
   useHead({
     title: 'Управление пользователями',
@@ -49,7 +51,17 @@ const AdminUsersPage = () => {
     return <Navigate to="/profile" replace />;
   }
 
-  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+  const handleRoleChange = async (userId: string, newRole: UserRole, userEmail: string) => {
+    // Запрещаем редактировать системного пользователя
+    if (userEmail === SYSTEM_ADMIN_EMAIL) {
+      notifications.show({
+        title: 'Ошибка',
+        message: 'Нельзя изменить роль системного пользователя',
+        color: 'red',
+      });
+      return;
+    }
+
     // Запрещаем админу менять свою роль
     if (currentUser?.id === userId) {
       notifications.show({
@@ -146,10 +158,10 @@ const AdminUsersPage = () => {
                     value={user.role}
                     onChange={(value) => {
                       if (value) {
-                        handleRoleChange(user.id, value as UserRole);
+                        handleRoleChange(user.id, value as UserRole, user.email);
                       }
                     }}
-                    disabled={currentUser?.id === user.id}
+                    disabled={currentUser?.id === user.id || user.email === SYSTEM_ADMIN_EMAIL}
                     w={200}
                   />
                 </Table.Td>
