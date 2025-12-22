@@ -32,8 +32,9 @@ import {
 import { useHead } from '@unhead/react';
 import { modals } from '@mantine/modals';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, Link } from 'react-router';
 import { notifications } from '@mantine/notifications';
+import { IconSettings } from '@tabler/icons-react';
 
 const ProfilePage = () => {
   useHead({
@@ -147,6 +148,16 @@ const ProfilePage = () => {
       <Group justify="space-between" align="center">
         <Title order={1}>Профиль</Title>
         <Group gap="md">
+          {user.role === 'ADMIN' && (
+            <Button
+              component={Link}
+              to="/admin/users"
+              leftSection={<IconSettings size={18} />}
+              variant="light"
+            >
+              Управление пользователями
+            </Button>
+          )}
           <Button leftSection={<IconEdit size={18} />} onClick={handleEdit}>
             Редактировать
           </Button>

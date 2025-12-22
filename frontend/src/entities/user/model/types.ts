@@ -24,9 +24,10 @@ interface UserResponse {
 }
 
 interface UserUpdate {
-  email: string;
-  username: string;
-  password: string;
+  email?: string;
+  username?: string;
+  password?: string;
+  role?: UserRole;
 }
 
 interface AuthResponse {
@@ -36,4 +37,5 @@ interface AuthResponse {
   username: string;
 }
 
-export type { AuthResponse, UserCreate, UserLogin, UserResponse, UserRole, UserUpdate };
+export type { AuthResponse, UserCreate, UserLogin, UserResponse, UserUpdate };
+export { UserRole };

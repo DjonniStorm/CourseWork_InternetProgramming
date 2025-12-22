@@ -2,8 +2,8 @@ import { apiClient } from '@/shared/api/client';
 import type { UserCreate, UserLogin, UserResponse, UserUpdate } from '../model/types';
 
 const userApi = {
-  getUser: async () => {
-    const response = await apiClient.get<UserResponse[]>('/user');
+  getAllUsers: async () => {
+    const response = await apiClient.get<UserResponse[]>('/users');
     return response;
   },
   getUserById: async (id: string) => {

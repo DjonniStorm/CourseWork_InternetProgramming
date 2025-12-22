@@ -5,7 +5,7 @@ import { queryClient } from '@/shared/config';
 import { tokenStorage } from '@/shared/lib/token';
 
 const useUsers = () => {
-  const query = useQuery({ queryKey: ['users'], queryFn: () => userApi.getUser() });
+  const query = useQuery({ queryKey: ['users'], queryFn: () => userApi.getAllUsers() });
   return query;
 };
 
