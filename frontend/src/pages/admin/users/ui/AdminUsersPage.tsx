@@ -1,23 +1,22 @@
-import { useUsers, useUpdateUser, useMe, type UserResponse, UserRole } from '@/entities/user';
+import { useUsers, useUpdateUser, useMe, UserRole } from '@/entities/user';
 import { formatDateTime } from '@/shared/utils';
 import {
-  Card,
   Stack,
   Group,
   Title,
   Text,
   Skeleton,
   Badge,
-  Button,
   Select,
   SimpleGrid,
   Table,
   Paper,
+  Center,
 } from '@mantine/core';
-import { IconShield, IconUser } from '@tabler/icons-react';
+import { IconUser } from '@tabler/icons-react';
 import { useHead } from '@unhead/react';
 import { notifications } from '@mantine/notifications';
-import { useMemo } from 'react';
+import { Navigate } from 'react-router';
 
 const AdminUsersPage = () => {
   useHead({
@@ -30,9 +29,25 @@ const AdminUsersPage = () => {
     ],
   });
 
-  const { data: currentUser } = useMe();
+  const { data: currentUser, isLoading: isCurrentUserLoading } = useMe();
   const { data: users, isLoading } = useUsers();
   const { mutateAsync: updateUser } = useUpdateUser();
+
+  // Проверяем, является ли пользователь админом
+  if (isCurrentUserLoading) {
+    return (
+      <Stack gap="xl">
+        <Title order={1}>Управление пользователями</Title>
+        <Center>
+          <Skeleton height={50} width="100%" />
+        </Center>
+      </Stack>
+    );
+  }
+
+  if (!currentUser || currentUser.role !== UserRole.ADMIN) {
+    return <Navigate to="/profile" replace />;
+  }
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     // Запрещаем админу менять свою роль
@@ -91,7 +106,7 @@ const AdminUsersPage = () => {
     <Stack gap="xl">
       <Title order={1}>Управление пользователями</Title>
 
-      <Paper withBorder shadow="sm" padding="md" radius="md">
+      <Paper withBorder shadow="sm" p="md" radius="md">
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -150,4 +165,3 @@ const AdminUsersPage = () => {
 AdminUsersPage.displayName = 'AdminUsersPage';
 
 export { AdminUsersPage };
-
