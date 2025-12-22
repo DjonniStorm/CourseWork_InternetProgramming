@@ -25,7 +25,7 @@ public class UserMapper {
                 userUpdateRequest.email(),
                 userUpdateRequest.username(),
                 userUpdateRequest.password(),
-                UserRole.USER);
+                userUpdateRequest.role() != null ? userUpdateRequest.role() : UserRole.USER);
     }
 
     public static UserResponse toResponse(User user) {

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <!-- Создание дефолтного администратора для профиля nopass -->
+    <!-- Email: admin@system.local, Password: admin -->
+    <!-- BCrypt hash для пароля "admin" (10 rounds):
+    $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy -->
+    <changeSet id="002-create-default-admin" author="coursework">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1"> SELECT COUNT(*) FROM users WHERE email =
+                    'admin@system.local' </sqlCheck>
+            </not>
+        </preConditions>
+        <insert tableName="users">
+            <column name="id" valueComputed="gen_random_uuid()" />
+            <column name="username" value="System Admin" />
+            <column name="email" value="admin@system.local" />
+            <column name="password_hash"
+                value="$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy" />
+            <column name="role" value="ADMIN" />
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

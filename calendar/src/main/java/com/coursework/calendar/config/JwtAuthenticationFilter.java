@@ -34,6 +34,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
+        // Пропускаем статические ресурсы и публичные API без проверки JWT
+        String path = request.getRequestURI();
+        if (path.startsWith("/assets/") || path.endsWith(".js") || path.endsWith(".css")
+                || path.endsWith(".ico") || path.endsWith(".png") || path.endsWith(".svg")
+                || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".gif")
+                || path.endsWith(".woff") || path.endsWith(".woff2") || path.endsWith(".ttf")
+                || path.endsWith(".eot") || path.equals("/index.html") || path.equals("/logo.png")
+                || path.startsWith("/h2-console/")
+                || path.startsWith("/swagger-ui/") || path.startsWith("/v3/api-docs/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Пропускаем только публичные эндпоинты авторизации (login, register, refresh,
+        // logout)
+        // /api/auth/me требует аутентификации, поэтому не пропускаем его
+        if (path.equals("/api/auth/login") || path.equals("/api/auth/register")
+                || path.equals("/api/auth/refresh") || path.equals("/api/auth/logout")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

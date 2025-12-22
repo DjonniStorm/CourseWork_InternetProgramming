@@ -1,4 +1,4 @@
-import { useMe } from '@/entities/user';
+import { useMe, useLogout } from '@/entities/user';
 import { useInvitations } from '@/entities/invitation';
 import { useUserEvents } from '@/entities/event';
 import { useUserContacts } from '@/entities/contact';
@@ -27,10 +27,14 @@ import {
   IconUsers,
   IconTicket,
   IconCalendarEvent,
+  IconLogout,
 } from '@tabler/icons-react';
 import { useHead } from '@unhead/react';
 import { modals } from '@mantine/modals';
 import { useMemo } from 'react';
+import { useNavigate, Link } from 'react-router';
+import { notifications } from '@mantine/notifications';
+import { IconSettings } from '@tabler/icons-react';
 
 const ProfilePage = () => {
   useHead({
@@ -47,6 +51,8 @@ const ProfilePage = () => {
   const { data: invitations } = useInvitations();
   const { data: events } = useUserEvents(user?.id ?? '');
   const { data: contacts } = useUserContacts(user?.id ?? '');
+  const { mutateAsync: logout } = useLogout();
+  const navigate = useNavigate();
 
   const stats = useMemo(() => {
     if (!user) {
@@ -82,6 +88,25 @@ const ProfilePage = () => {
         />
       ),
     });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      notifications.show({
+        title: 'Выход выполнен',
+        message: 'Вы успешно вышли из аккаунта',
+        color: 'blue',
+      });
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+      notifications.show({
+        title: 'Ошибка',
+        message: 'Не удалось выйти из аккаунта',
+        color: 'red',
+      });
+    }
   };
 
   if (isLoading) {
@@ -122,9 +147,29 @@ const ProfilePage = () => {
     <Stack gap="xl">
       <Group justify="space-between" align="center">
         <Title order={1}>Профиль</Title>
-        <Button leftSection={<IconEdit size={18} />} onClick={handleEdit}>
-          Редактировать
-        </Button>
+        <Group gap="md">
+          {user.role === 'ADMIN' && (
+            <Button
+              component={Link}
+              to="/admin/users"
+              leftSection={<IconSettings size={18} />}
+              variant="light"
+            >
+              Управление пользователями
+            </Button>
+          )}
+          <Button leftSection={<IconEdit size={18} />} onClick={handleEdit}>
+            Редактировать
+          </Button>
+          <Button
+            leftSection={<IconLogout size={18} />}
+            variant="outline"
+            color="red"
+            onClick={handleLogout}
+          >
+            Выйти
+          </Button>
+        </Group>
       </Group>
 
       <Card withBorder shadow="sm" padding="xl" radius="md">

@@ -6,7 +6,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
@@ -30,15 +29,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**")
+        // Обработка статических ресурсов из classpath:/static/
+        // Spring Boot по умолчанию ищет ресурсы в classpath:/static/, но мы явно указываем для ясности
+        // Важно: не используем "/**", чтобы не перехватывать API запросы
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("classpath:/static/assets/")
+                .resourceChain(false);
+        registry.addResourceHandler("/*.js", "/*.css", "/*.ico", "/*.png", "/*.svg", "/*.jpg", "/*.jpeg", "/*.gif", "/*.woff", "/*.woff2", "/*.ttf", "/*.eot")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(false);
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        // Перенаправление всех не-API запросов на index.html для SPA
-        registry.addViewController("/").setViewName("forward:/index.html");
-        registry.addViewController("/{path:[^api].*}").setViewName("forward:/index.html");
+        registry.addResourceHandler("/logo.png", "/vite.svg", "/index.html")
+                .addResourceLocations("classpath:/static/")
+                .resourceChain(false);
     }
 }

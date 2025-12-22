@@ -30,6 +30,10 @@ const ContactsPage = lazy(() =>
   import('@pages/contacts').then((module) => ({ default: module.ContactsPage })),
 );
 
+const AdminUsersPage = lazy(() =>
+  import('@pages/admin/users').then((module) => ({ default: module.AdminUsersPage })),
+);
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -67,6 +71,11 @@ const router = createBrowserRouter([
       {
         path: '/contacts',
         element: <ContactsPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: '/admin/users',
+        element: <AdminUsersPage />,
         errorElement: <ErrorPage />,
       },
     ],

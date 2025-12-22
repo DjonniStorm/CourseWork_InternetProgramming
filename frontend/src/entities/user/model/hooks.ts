@@ -5,7 +5,7 @@ import { queryClient } from '@/shared/config';
 import { tokenStorage } from '@/shared/lib/token';
 
 const useUsers = () => {
-  const query = useQuery({ queryKey: ['users'], queryFn: () => userApi.getUser() });
+  const query = useQuery({ queryKey: ['users'], queryFn: () => userApi.getAllUsers() });
   return query;
 };
 
@@ -67,13 +67,20 @@ const useRegister = () => {
 
 const useLogout = () => {
   const mutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
+      // Вызываем API для удаления refresh token cookie на сервере
+      try {
+        await authApi.logout();
+      } catch (error) {
+        // Игнорируем ошибки, так как мы все равно очищаем токены локально
+        console.error('Logout API error:', error);
+      }
+      // Удаляем access token из localStorage
       tokenStorage.remove();
-      return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user'] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      // Очищаем все кэшированные запросы
+      queryClient.clear();
     },
   });
   return mutation;
