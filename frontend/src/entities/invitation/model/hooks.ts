@@ -27,6 +27,7 @@ const useCreateInvitation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations'] });
       queryClient.invalidateQueries({ queryKey: ['userInvitations'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };
@@ -38,6 +39,7 @@ const useUpdateInvitation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations'] });
       queryClient.invalidateQueries({ queryKey: ['userInvitations'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };
@@ -48,6 +50,7 @@ const useDeleteInvitation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations'] });
       queryClient.invalidateQueries({ queryKey: ['userInvitations'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };

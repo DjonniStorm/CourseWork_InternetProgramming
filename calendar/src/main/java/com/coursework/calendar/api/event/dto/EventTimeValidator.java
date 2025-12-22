@@ -16,3 +16,4 @@ public class EventTimeValidator implements ConstraintValidator<ValidEventTime, E
         return !eventRequest.endTime().isBefore(eventRequest.startTime());
     }
 }
+

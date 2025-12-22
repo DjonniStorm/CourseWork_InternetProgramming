@@ -23,3 +23,4 @@ const ContactSearchInput = ({
 };
 
 export { ContactSearchInput };
+

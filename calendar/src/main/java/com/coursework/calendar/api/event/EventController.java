@@ -2,7 +2,6 @@ package com.coursework.calendar.api.event;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -55,6 +54,15 @@ public class EventController {
     @ApiResponse(responseCode = "200", description = "Успешное получение списка событий пользователя", content = @Content(schema = @Schema(implementation = EventResponse.class)))
     public List<EventResponse> getUserEvents(@PathVariable UUID userId) {
         return eventService.getEventsByUserId(userId).stream()
+                .map(EventMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/invited/{userId}")
+    @Operation(summary = "Получить события, на которые пользователя пригласили", description = "Возвращает список событий, на которые указанный пользователь был приглашен")
+    @ApiResponse(responseCode = "200", description = "Успешное получение списка приглашенных событий", content = @Content(schema = @Schema(implementation = EventResponse.class)))
+    public List<EventResponse> getInvitedEvents(@PathVariable UUID userId) {
+        return eventService.getInvitedEventsByUserId(userId).stream()
                 .map(EventMapper::toResponse)
                 .collect(Collectors.toList());
     }

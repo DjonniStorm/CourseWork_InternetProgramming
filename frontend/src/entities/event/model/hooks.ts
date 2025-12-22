@@ -18,12 +18,20 @@ const useUserEvents = (userId: string) => {
   });
 };
 
+const useInvitedEvents = (userId: string) => {
+  return useQuery({
+    queryKey: ['invitedEvents', userId],
+    queryFn: () => eventApi.getInvitedEvents(userId),
+  });
+};
+
 const useCreateEvent = () => {
   return useMutation({
     mutationFn: (event: EventRequest) => eventApi.createEvent(event),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };
@@ -36,6 +44,7 @@ const useUpdateEvent = () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['event'] });
       queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };
@@ -45,11 +54,13 @@ const useDeleteEvent = () => {
     mutationFn: (id: string) => eventApi.deleteEvent(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
     onError: () => {
       queryClient.invalidateQueries({ queryKey: ['userEvents'] });
+      queryClient.invalidateQueries({ queryKey: ['invitedEvents'] });
     },
   });
 };
 
-export { useEvents, useEvent, useUserEvents, useCreateEvent, useUpdateEvent, useDeleteEvent };
+export { useEvents, useEvent, useUserEvents, useInvitedEvents, useCreateEvent, useUpdateEvent, useDeleteEvent };

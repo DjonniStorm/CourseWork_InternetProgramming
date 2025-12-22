@@ -67,3 +67,4 @@ const ContactInviteItem = ({ contactUserId, onInvite, searchQuery }: ContactInvi
 };
 
 export { ContactInviteItem };
+

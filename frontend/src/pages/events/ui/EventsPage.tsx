@@ -2,6 +2,7 @@ import {
   useCreateEvent,
   useDeleteEvent,
   useUserEvents,
+  useInvitedEvents,
   type EventRequest,
   type EventResponse,
   EventStatus,
@@ -54,10 +55,36 @@ const EventsPage = () => {
     ],
   });
   const { data: user } = useMe();
-  const { data: events, isLoading } = useUserEvents(user?.id ?? '');
+  const { data: userEvents, isLoading: isLoadingUserEvents } = useUserEvents(user?.id ?? '');
+  const { data: invitedEvents, isLoading: isLoadingInvitedEvents } = useInvitedEvents(user?.id ?? '');
   const { mutateAsync: createEventMutation } = useCreateEvent();
   const { mutateAsync: deleteEventMutation } = useDeleteEvent();
   const navigate = useNavigate();
+
+  // Объединяем события пользователя и приглашенные события, убирая дубликаты
+  const events = useMemo(() => {
+    const userEventsList = userEvents ?? [];
+    const invitedEventsList = invitedEvents ?? [];
+    
+    // Создаем Map для быстрого поиска по ID и избежания дубликатов
+    const eventsMap = new Map<string, EventResponse>();
+    
+    // Сначала добавляем события пользователя
+    userEventsList.forEach(event => {
+      eventsMap.set(event.id, event);
+    });
+    
+    // Затем добавляем приглашенные события (если их еще нет)
+    invitedEventsList.forEach(event => {
+      if (!eventsMap.has(event.id)) {
+        eventsMap.set(event.id, event);
+      }
+    });
+    
+    return Array.from(eventsMap.values());
+  }, [userEvents, invitedEvents]);
+
+  const isLoading = isLoadingUserEvents || isLoadingInvitedEvents;
 
   const [statusFilter, setStatusFilter] = useQueryFilter<EventStatus>({
     paramName: 'status',

@@ -14,6 +14,10 @@ const eventApi = {
     const response = await apiClient.get<EventResponse[]>(`/events/user/${userId}`);
     return response;
   },
+  getInvitedEvents: async (userId: string) => {
+    const response = await apiClient.get<EventResponse[]>(`/events/invited/${userId}`);
+    return response;
+  },
   createEvent: async (event: EventRequest) => {
     const response = await apiClient.post('/events', event);
     return response;

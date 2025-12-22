@@ -2,18 +2,22 @@ package com.coursework.calendar.service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.coursework.calendar.entities.event.Event;
 import com.coursework.calendar.repository.EventRepository;
+import com.coursework.calendar.repository.InvitationRepository;
 
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final InvitationRepository invitationRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, InvitationRepository invitationRepository) {
         this.eventRepository = eventRepository;
+        this.invitationRepository = invitationRepository;
     }
 
     public List<Event> getAllEvents() {
@@ -27,6 +31,18 @@ public class EventService {
 
     public List<Event> getEventsByUserId(UUID userId) {
         return eventRepository.findByOwnerId(userId);
+    }
+
+    public List<Event> getInvitedEventsByUserId(UUID userId) {
+        List<UUID> eventIds = invitationRepository.findByUserId(userId).stream()
+                .map(invitation -> invitation.getEventId())
+                .collect(Collectors.toList());
+        
+        if (eventIds.isEmpty()) {
+            return List.of();
+        }
+        
+        return eventRepository.findAllById(eventIds);
     }
 
     public Event createEvent(Event event) {
