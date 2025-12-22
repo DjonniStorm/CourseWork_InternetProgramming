@@ -131,6 +131,25 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "Выход из системы", description = "Выходит из системы, удаляя refresh token из cookie")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешный выход из системы"),
+            @ApiResponse(responseCode = "401", description = "Не авторизован")
+    })
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        // Удаляем refresh token cookie, устанавливая его с пустым значением и MaxAge =
+        // 0
+        Cookie refreshTokenCookie = new Cookie("refreshToken", "");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // Удаляем cookie
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/me")
     @Operation(summary = "Получить текущего пользователя", description = "Возвращает информацию о текущем аутентифицированном пользователе")
     @ApiResponses(value = {

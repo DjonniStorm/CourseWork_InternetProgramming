@@ -48,11 +48,11 @@ const LoginPage = () => {
               Войдите в систему
             </Title>
             <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col gap-4">
-              <TextInput {...form.getInputProps('email')} label="Email" placeholder="Email" />
+              <TextInput {...form.getInputProps('email')} label="Email" placeholder="email" />
               <PasswordInput
                 {...form.getInputProps('password')}
-                label="Password"
-                placeholder="Password"
+                label="Пароль"
+                placeholder="пароль"
               />
               <Button loading={isPending} type="submit">
                 Войти
