@@ -91,12 +91,10 @@ function getAllFiles(dirPath: string, arrayOfFiles: FileInfo[] = []): FileInfo[]
       const relativePath = path.relative(process.cwd(), filePath);
       const normalizedPath = relativePath.replace(/\\/g, '/');
 
-      // Пропускаем файл листинга, чтобы он не попал в сам листинг
       if (normalizedPath === 'code-listing.txt' || normalizedPath === 'generate-code-listing.ts') {
         return;
       }
 
-      // Пропускаем lock-файлы
       const fileName = path.basename(normalizedPath);
       if (
         fileName === 'package-lock.json' ||
@@ -106,7 +104,6 @@ function getAllFiles(dirPath: string, arrayOfFiles: FileInfo[] = []): FileInfo[]
         return;
       }
 
-      // Пропускаем файлы и директории, которые нужно игнорировать
       if (shouldIgnore(relativePath)) {
         return;
       }
@@ -114,13 +111,11 @@ function getAllFiles(dirPath: string, arrayOfFiles: FileInfo[] = []): FileInfo[]
       const stat = fs.statSync(filePath);
 
       if (stat.isDirectory()) {
-        // Пропускаем директории, которые нужно игнорировать
         if (!shouldIgnore(relativePath)) {
           // Рекурсивно обходим поддиректории
           getAllFiles(filePath, arrayOfFiles);
         }
       } else if (stat.isFile() && shouldInclude(relativePath)) {
-        // Добавляем файл, если он подходит по критериям
         try {
           const content = fs.readFileSync(filePath, 'utf-8');
           arrayOfFiles.push({
@@ -128,7 +123,6 @@ function getAllFiles(dirPath: string, arrayOfFiles: FileInfo[] = []): FileInfo[]
             content,
           });
         } catch (error) {
-          // Если не удалось прочитать файл (например, бинарный), пропускаем
           console.warn(`Не удалось прочитать файл: ${relativePath}`);
         }
       }

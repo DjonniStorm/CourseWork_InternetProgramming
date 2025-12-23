@@ -107,7 +107,6 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
     })
     public ResponseEntity<Void> register(@Valid @RequestBody UserCreateRequest userCreateRequest) {
-        // В профиле nopass регистрация отключена
         if (isNopassProfile()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -157,7 +156,6 @@ public class AuthController {
             }
         }
 
-        // Обычная логика для других профилей
         if (refreshToken == null || !jwtService.validateRefreshToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -187,8 +185,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Не авторизован")
     })
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        // Удаляем refresh token cookie, устанавливая его с пустым значением и MaxAge =
-        // 0
+        // Удаляем refresh token cookie
         Cookie refreshTokenCookie = new Cookie("refreshToken", "");
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(false);

@@ -31,7 +31,7 @@ public class JwtService {
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes();
-        // JWT требует минимум 256 бит (32 байта) для HMAC-SHA
+        // (32 байта) для HMAC-SHA
         if (keyBytes.length < 32) {
             byte[] secureKey = new byte[32];
             if (keyBytes.length > 0) {

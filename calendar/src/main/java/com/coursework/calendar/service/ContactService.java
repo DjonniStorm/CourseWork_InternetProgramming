@@ -36,8 +36,6 @@ public class ContactService {
     }
 
     public ContactRequest createContactRequest(ContactRequest contactRequest) {
-        // Проверяем, существует ли уже запрос между этими пользователями
-        // Проверяем PENDING и ACCEPTED статусы
         if (contactRepository.findExistingRequest(
                 contactRequest.getFromUserId(),
                 contactRequest.getToUserId(),
@@ -46,7 +44,6 @@ public class ContactService {
             throw new IllegalStateException("Contact request already exists between these users");
         }
 
-        // Проверяем, что пользователь не отправляет запрос самому себе
         if (contactRequest.getFromUserId().equals(contactRequest.getToUserId())) {
             throw new IllegalArgumentException("Cannot send contact request to yourself");
         }

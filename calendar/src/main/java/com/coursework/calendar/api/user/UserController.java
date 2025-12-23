@@ -105,7 +105,6 @@ public class UserController {
                                 User currentUser = userService.getUserByEmail(email);
                                 currentUserId = currentUser.getId();
                         } catch (RuntimeException e) {
-                                // Игнорируем, если пользователь не найден
                         }
                 }
                 return userService.searchUsers(q, currentUserId, pageable)
