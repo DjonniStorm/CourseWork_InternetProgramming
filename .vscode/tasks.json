@@ -2,9 +2,31 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Maven: Применить миграции и запуск (dev)",
+            "type": "shell",
+            "command": "mvn spring-boot:run -Pdev -X -e",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "env": {
+                    "SPRING_PROFILES_ACTIVE": "dev",
+                    "JWT_SECRET": "${env:JWT_SECRET:your-256-bit-secret-key-for-jwt-token-generation-minimum-32-characters}"
+                }
+            },
+            "problemMatcher": "$tsc",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "isBackground": true
+        },
+        {
             "label": "Maven: Запуск (dev)",
             "type": "shell",
-            "command": "mvn spring-boot:run -Pdev",
+            "command": "mvn spring-boot:run -Pdev -X -e",
             "options": {
                 "cwd": "${workspaceFolder}/calendar",
                 "env": {
@@ -152,6 +174,27 @@
                 "panel": "new"
             },
             "isBackground": true
+        },
+        {
+            "label": "Liquibase: Применить миграции (dev)",
+            "type": "shell",
+            "command": "mvn liquibase:update -Pdev -X -e -Dliquibase.url=jdbc:h2:mem:calendardb -Dliquibase.username=sa -Dliquibase.password=",
+            "options": {
+                "cwd": "${workspaceFolder}/calendar",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": ["/c"]
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
         },
         {
             "label": "Liquibase: Применить миграции (prod)",

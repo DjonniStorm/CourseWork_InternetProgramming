@@ -29,9 +29,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Обработка статических ресурсов из classpath:/static/
-        // Spring Boot по умолчанию ищет ресурсы в classpath:/static/, но мы явно указываем для ясности
-        // Важно: не используем "/**", чтобы не перехватывать API запросы
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("classpath:/static/assets/")
                 .resourceChain(false);

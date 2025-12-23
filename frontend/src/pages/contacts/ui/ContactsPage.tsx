@@ -4,6 +4,7 @@ import {
   useUpdateContact,
   type ContactRequestResponse,
   useDeleteContact,
+  useContact,
 } from '@/entities/contact';
 import { useMe, useUser } from '@/entities/user';
 import { nameToColor } from '@/shared/utils';
@@ -310,7 +311,26 @@ type OutgoingRequestCardProps = {
 
 const OutgoingRequestCard = ({ contact }: OutgoingRequestCardProps) => {
   const { data: contactUser } = useUser(contact.toUserId);
+  const { mutateAsync: deleteContact } = useDeleteContact();
   const contactName = contactUser?.username || contact.toUserId.slice(0, 8);
+
+  const handleDelete = async () => {
+    try {
+      await deleteContact(contact.id);
+      notifications.show({
+        title: 'Успешное удаление',
+        message: '',
+        color: 'green',
+      });
+    } catch (error) {
+      console.error(error);
+      notifications.show({
+        title: 'Ошибка удаления',
+        message: '',
+        color: 'red',
+      });
+    }
+  };
 
   return (
     <Card withBorder shadow="sm" padding="lg" radius="md">
@@ -331,7 +351,7 @@ const OutgoingRequestCard = ({ contact }: OutgoingRequestCardProps) => {
           </Pill>
         </Stack>
         <Tooltip label="Отменить запрос">
-          <ActionIcon>
+          <ActionIcon onClick={handleDelete}>
             <IconX size={16} />
           </ActionIcon>
         </Tooltip>

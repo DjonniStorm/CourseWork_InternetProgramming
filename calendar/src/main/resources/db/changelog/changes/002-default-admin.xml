@@ -9,14 +9,24 @@
     <!-- BCrypt hash для пароля "admin" (10 rounds):
     $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy -->
     <changeSet id="002-create-default-admin" author="coursework">
+        <validCheckSum>9:9a94f18064d03dac0ebdab26233ba8dd</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <not>
                 <sqlCheck expectedResult="1"> SELECT COUNT(*) FROM users WHERE email =
                     'admin@system.local' </sqlCheck>
             </not>
         </preConditions>
-        <insert tableName="users">
+        <insert tableName="users" dbms="postgresql">
             <column name="id" valueComputed="gen_random_uuid()" />
+            <column name="username" value="System Admin" />
+            <column name="email" value="admin@system.local" />
+            <column name="password_hash"
+                value="$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy" />
+            <column name="role" value="ADMIN" />
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP" />
+        </insert>
+        <insert tableName="users" dbms="h2">
+            <column name="id" valueComputed="RANDOM_UUID()" />
             <column name="username" value="System Admin" />
             <column name="email" value="admin@system.local" />
             <column name="password_hash"

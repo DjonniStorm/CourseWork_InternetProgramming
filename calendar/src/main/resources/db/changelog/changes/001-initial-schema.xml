@@ -5,8 +5,9 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
 
     <changeSet id="001-create-users-table" author="coursework">
+        <validCheckSum>9:96f663c80aeaee03c042a375e16db8db</validCheckSum>
         <createTable tableName="users">
-            <column name="id" type="UUID">
+            <column name="id" type="VARCHAR(36)">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="username" type="VARCHAR(255)">
@@ -31,8 +32,9 @@
     </changeSet>
 
     <changeSet id="002-create-events-table" author="coursework">
+        <validCheckSum>9:cce27df7b79f1ce77b08385a6ef50335</validCheckSum>
         <createTable tableName="events">
-            <column name="id" type="UUID">
+            <column name="id" type="VARCHAR(36)">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="title" type="VARCHAR(255)">
@@ -47,7 +49,7 @@
             <column name="end_time" type="TIMESTAMP">
                 <constraints nullable="false" />
             </column>
-            <column name="owner_id" type="UUID">
+            <column name="owner_id" type="VARCHAR(36)">
                 <constraints nullable="false" />
             </column>
             <column name="created_at" type="TIMESTAMP">
@@ -73,14 +75,15 @@
     </changeSet>
 
     <changeSet id="003-create-invitations-table" author="coursework">
+        <validCheckSum>9:fbddace3133943c5f4ca028e36ec9106</validCheckSum>
         <createTable tableName="invitations">
-            <column name="id" type="UUID">
+            <column name="id" type="VARCHAR(36)">
                 <constraints primaryKey="true" nullable="false" />
             </column>
-            <column name="event_id" type="UUID">
+            <column name="event_id" type="VARCHAR(36)">
                 <constraints nullable="false" />
             </column>
-            <column name="user_id" type="UUID">
+            <column name="user_id" type="VARCHAR(36)">
                 <constraints nullable="false" />
             </column>
             <column name="created_at" type="TIMESTAMP">
@@ -117,8 +120,9 @@
     </changeSet>
 
     <changeSet id="004-create-contact-requests-table" author="coursework">
+        <validCheckSum>9:1b1a8dce735490f39352edd96c01c7d0</validCheckSum>
         <createTable tableName="contact_requests">
-            <column name="id" type="UUID">
+            <column name="id" type="VARCHAR(36)">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="created_at" type="TIMESTAMP">
@@ -127,10 +131,10 @@
             <column name="responded_at" type="TIMESTAMP">
                 <constraints nullable="true" />
             </column>
-            <column name="from_user_id" type="UUID">
+            <column name="from_user_id" type="VARCHAR(36)">
                 <constraints nullable="false" />
             </column>
-            <column name="to_user_id" type="UUID">
+            <column name="to_user_id" type="VARCHAR(36)">
                 <constraints nullable="false" />
             </column>
             <column name="status" type="VARCHAR(50)">
